@@ -586,10 +586,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong00ce81b"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> 00ce81b </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongbb4c4bd"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> bb4c4bd </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrong00ce81b" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongbb4c4bd" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -697,6 +697,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+bb4c4bd
+</td>
+<td>
+wolfemd
+</td>
+<td>
+2019-11-21
+</td>
+<td>
+Minor cosmetic change to avoid unecessary printing.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+381f019
+</td>
+<td>
+wolfemd
+</td>
+<td>
+2019-11-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -875,508 +909,264 @@ Publish the first set of analyses and files for NRCRI 2019 GS,
 <span id="cb9-2"><a href="#cb9-2"></a><span class="kw">saveRDS</span>(pca,<span class="dt">file=</span><span class="st">&quot;/workdir/marnin/NRCRI_2019GS/PCA_NRCRI_SamplesForGP_73119.rds&quot;</span>)</span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="kw">rm</span>(pca); <span class="kw">gc</span>()</span></code></pre></div>
 <p>Copy to local machine 0.04623 0.02847 0.02576 0.02201</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>());<span class="kw">gc</span>()</span></code></pre></div>
-<pre><code>          used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)
-Ncells  605523 32.4    1301822 69.6         NA  1011655 54.1
-Vcells 1159599  8.9    8388608 64.0     102400  1943513 14.9</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(cowplot); </span>
-<span id="cb12-2"><a href="#cb12-2"></a>pc_scores&lt;-<span class="kw">readRDS</span>(<span class="st">&quot;output/PCscores_NRCRI_SamplesForGP_73119.rds&quot;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3"></a>pc_scores<span class="op">$</span>FullSampleName <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,.,<span class="dt">value =</span> T,<span class="dt">ignore.case =</span> T)</span></code></pre></div>
-<pre><code>  [1] &quot;F100C1bP001:CA7RRANXX:3:499789&quot; &quot;F104C1bP001:CA7RRANXX:3:499798&quot;
-  [3] &quot;F106C1bP002:CA7RRANXX:3:499808&quot; &quot;F107C1bP001:CA7RRANXX:3:499809&quot;
-  [5] &quot;F107C1bP003:CA7RRANXX:3:499811&quot; &quot;F107C1bP004:CA7RRANXX:3:499812&quot;
-  [7] &quot;F108C1bP002:CA7RRANXX:3:499816&quot; &quot;F109C1bP002:CA7RRANXX:3:499819&quot;
-  [9] &quot;F10C1bP004:CABV7ANXX:5:503877&quot;  &quot;F10C1bP005:CABV7ANXX:5:503878&quot; 
- [11] &quot;F10C1bP012:CABV7ANXX:5:503885&quot;  &quot;F10C1bP013:CABV7ANXX:5:503886&quot; 
- [13] &quot;F10C1bP016:CABV7ANXX:5:503889&quot;  &quot;F10C1bP017:CABV7ANXX:5:503890&quot; 
- [15] &quot;F112C1bP002:CA7RRANXX:3:499829&quot; &quot;F112C1bP005:CA7RRANXX:3:499832&quot;
- [17] &quot;F114C1bP001:CA7RRANXX:3:499834&quot; &quot;F115C1bP001:CA7RRANXX:3:499835&quot;
- [19] &quot;F116C1bP003:CA7RRANXX:3:499838&quot; &quot;F116C1bP004:CA7RRANXX:3:499839&quot;
- [21] &quot;F116C1bP006:CA7RRANXX:3:499841&quot; &quot;F116C1bP017:CA7RRANXX:4:499852&quot;
- [23] &quot;F117C1bP004:CA7RRANXX:4:499856&quot; &quot;F117C1bP005:CA7RRANXX:4:499857&quot;
- [25] &quot;F118C1bP001:CA7RRANXX:4:499858&quot; &quot;F118C1bP002:CA7RRANXX:4:499859&quot;
- [27] &quot;F118C1bP004:CA7RRANXX:4:499861&quot; &quot;F11C1bP001:CABV7ANXX:5:503891&quot; 
- [29] &quot;F11C1bP002:CABV7ANXX:5:503892&quot;  &quot;F11C1bP012:CABV7ANXX:5:503903&quot; 
- [31] &quot;F11C1bP018:CABV7ANXX:5:503909&quot;  &quot;F120C1bP005:CA7RRANXX:4:499866&quot;
- [33] &quot;F120C1bP007:CA7RRANXX:4:499869&quot; &quot;F120C1bP008:CA7RRANXX:4:499870&quot;
- [35] &quot;F121C1bP002:CA7RRANXX:4:499875&quot; &quot;F121C1bP004:CA7RRANXX:4:499877&quot;
- [37] &quot;F121C1bP009:CA7RRANXX:4:499882&quot; &quot;F122C1bP001:CA7RRANXX:4:499884&quot;
- [39] &quot;F122C1bP004:CA7RRANXX:4:499887&quot; &quot;F122C1bP009:CA7RRANXX:4:499892&quot;
- [41] &quot;F122C1bP010:CA7RRANXX:4:499893&quot; &quot;F123C1bP005:CA7RRANXX:4:499898&quot;
- [43] &quot;F123C1bP006:CA7RRANXX:4:499899&quot; &quot;F123C1bP007:CA7RRANXX:4:499900&quot;
- [45] &quot;F126C1bP003:CA7RRANXX:4:499912&quot; &quot;F127C1bP001:CA7RRANXX:4:499913&quot;
- [47] &quot;F127C1bP004:CA7RRANXX:4:499916&quot; &quot;F128C1bP003:CA7RRANXX:4:499922&quot;
- [49] &quot;F128C1bP010:CA7RRANXX:4:499929&quot; &quot;F129C1bP001:CA7RRANXX:4:499930&quot;
- [51] &quot;F129C1bP002:CA7RRANXX:4:499931&quot; &quot;F129C1bP003:CA7RRANXX:4:499932&quot;
- [53] &quot;F12C1bP001:CABV7ANXX:5:503915&quot;  &quot;F12C1bP018:CABV7ANXX:5:503932&quot; 
- [55] &quot;F12C1bP020:CABV7ANXX:5:503934&quot;  &quot;F134C1bP005:CABJYANXX:5:505226&quot;
- [57] &quot;F136C1bP002:CABJYANXX:5:505240&quot; &quot;F136C1bP006:CABJYANXX:5:505244&quot;
- [59] &quot;F137C1bP003:CABJYANXX:5:505249&quot; &quot;F137C1bP005:CABJYANXX:5:505251&quot;
- [61] &quot;F137C1bP006:CABJYANXX:5:505252&quot; &quot;F137C1bP011:CABJYANXX:5:505257&quot;
- [63] &quot;F139C1bP002:CABJYANXX:5:505264&quot; &quot;F139C1bP003:CABJYANXX:5:505265&quot;
- [65] &quot;F139C1bP005:CABJYANXX:5:505267&quot; &quot;F140C1bP001:CABJYANXX:5:505270&quot;
- [67] &quot;F140C1bP002:CABJYANXX:5:505271&quot; &quot;F140C1bP003:CABJYANXX:5:505272&quot;
- [69] &quot;F140C1bP004:CABJYANXX:5:505273&quot; &quot;F140C1bP006:CABJYANXX:5:505275&quot;
- [71] &quot;F140C1bP007:CABJYANXX:5:505276&quot; &quot;F140C1bP008:CABJYANXX:5:505277&quot;
- [73] &quot;F141C1bP001:CABJYANXX:5:505279&quot; &quot;F141C1bP005:CABJYANXX:5:505283&quot;
- [75] &quot;F142C1bP001:CABJYANXX:5:505292&quot; &quot;F144C1bP001:CABJYANXX:5:505298&quot;
- [77] &quot;F144C1bP004:CABJYANXX:5:505302&quot; &quot;F144C1bP006:CABJYANXX:5:505304&quot;
- [79] &quot;F144C1bP007:CABJYANXX:5:505305&quot; &quot;F144C1bP010:CABJYANXX:5:505308&quot;
- [81] &quot;F145C1bP001:CABJYANXX:5:505309&quot; &quot;F145C1bP003:CABJYANXX:5:505311&quot;
- [83] &quot;F146C1bP001:CABJYANXX:5:505312&quot; &quot;F147C1bP001:CABJYANXX:5:505313&quot;
- [85] &quot;F148C1bP002:CABJYANXX:5:505316&quot; &quot;F149C1bP002:CA7RRANXX:5:499944&quot;
- [87] &quot;F14C1bP003:CABV7ANXX:5:503947&quot;  &quot;F152C1bP007:CA7RRANXX:5:499958&quot;
- [89] &quot;F152C1bP008:CA7RRANXX:5:499959&quot; &quot;F152C1bP009:CA7RRANXX:5:499960&quot;
- [91] &quot;F152C1bP010:CA7RRANXX:5:499961&quot; &quot;F152C1bP014:CA7RRANXX:5:499965&quot;
- [93] &quot;F152C1bP016:CA7RRANXX:5:499967&quot; &quot;F152C1bP019:CA7RRANXX:5:499969&quot;
- [95] &quot;F152C1bP020:CA7RRANXX:5:499970&quot; &quot;F153C1bP001:CA7RRANXX:5:499974&quot;
- [97] &quot;F153C1bP005:CA7RRANXX:5:499978&quot; &quot;F153C1bP012:CA7RRANXX:5:499985&quot;
- [99] &quot;F153C1bP016:CA7RRANXX:5:499989&quot; &quot;F153C1bP020:CA7RRANXX:5:499993&quot;
-[101] &quot;F153C1bP022:CA7RRANXX:5:499995&quot; &quot;F153C1bP030:CA7RRANXX:5:500003&quot;
-[103] &quot;F153C1bP033:CA7RRANXX:5:500007&quot; &quot;F153C1bP034:CA7RRANXX:5:500008&quot;
-[105] &quot;F153C1bP039:CA7RRANXX:5:500013&quot; &quot;F153C1bP042:CA7RRANXX:5:500016&quot;
-[107] &quot;F153C1bP047:CA7RRANXX:5:500021&quot; &quot;F153C1bP052:CA7RRANXX:5:500026&quot;
-[109] &quot;F153C1bP055:CA7RRANXX:5:500029&quot; &quot;F153C1bP056:CA7RRANXX:5:500030&quot;
-[111] &quot;F153C1bP057:CA7RRANXX:5:500031&quot; &quot;F154C1bP001:CA7RRANXX:5:500032&quot;
-[113] &quot;F154C1bP005:CA7RRANXX:5:500036&quot; &quot;F154C1bP014:CABJYANXX:6:505420&quot;
-[115] &quot;F154C1bP015:CABJYANXX:6:505421&quot; &quot;F154C1bP016:CABJYANXX:6:505422&quot;
-[117] &quot;F154C1bP017:CABJYANXX:6:505423&quot; &quot;F154C1bP020:CABJYANXX:6:505426&quot;
-[119] &quot;F154C1bP021:CABJYANXX:6:505427&quot; &quot;F154C1bP023:CABJYANXX:6:505429&quot;
-[121] &quot;F154C1bP024:CABJYANXX:6:505430&quot; &quot;F154C1bP025:CABJYANXX:6:505431&quot;
-[123] &quot;F154C1bP026:CABJYANXX:6:505432&quot; &quot;F154C1bP028:CABJYANXX:6:505434&quot;
-[125] &quot;F156C1bP001:CABJYANXX:6:505446&quot; &quot;F156C1bP006:CABJYANXX:6:505451&quot;
-[127] &quot;F157C1bP001:CABJYANXX:6:505457&quot; &quot;F158C1bP001:CABJYANXX:6:505458&quot;
-[129] &quot;F158C1bP009:CABJYANXX:6:505466&quot; &quot;F158C1bP010:CABJYANXX:6:505467&quot;
-[131] &quot;F158C1bP011:CABJYANXX:6:505468&quot; &quot;F158C1bP016:CABJYANXX:6:505473&quot;
-[133] &quot;F158C1bP018:CABJYANXX:6:505475&quot; &quot;F159C1bP001:CABJYANXX:6:505477&quot;
-[135] &quot;F159C1bP007:CABJYANXX:6:505483&quot; &quot;F159C1bP009:CABJYANXX:6:505485&quot;
-[137] &quot;F159C1bP010:CABJYANXX:6:505486&quot; &quot;F159C1bP012:CABJYANXX:6:505489&quot;
-[139] &quot;F159C1bP013:CABJYANXX:6:505490&quot; &quot;F159C1bP015:CABJYANXX:6:505492&quot;
-[141] &quot;F159C1bP017:CABJYANXX:6:505494&quot; &quot;F160C1bP001:CABJYANXX:6:505495&quot;
-[143] &quot;F160C1bP006:CABJYANXX:6:505500&quot; &quot;F160C1bP007:CABJYANXX:6:505501&quot;
-[145] &quot;F162C1bP004:CABJYANXX:7:505511&quot; &quot;F162C1bP006:CABJYANXX:7:505513&quot;
-[147] &quot;F163C1bP002:CABJYANXX:7:505518&quot; &quot;F163C1bP003:CABJYANXX:7:505519&quot;
-[149] &quot;F163C1bP006:CABJYANXX:7:505522&quot; &quot;F163C1bP010:CABJYANXX:7:505526&quot;
-[151] &quot;F164C1bP002:CABJYANXX:7:505530&quot; &quot;F164C1bP004:CABJYANXX:7:505532&quot;
-[153] &quot;F165C1bP001:CABJYANXX:7:505538&quot; &quot;F165C1bP003:CABJYANXX:7:505540&quot;
-[155] &quot;F165C1bP006:CABJYANXX:7:505543&quot; &quot;F165C1bP007:CABJYANXX:7:505544&quot;
-[157] &quot;F165C1bP016:CABJYANXX:7:505553&quot; &quot;F165C1bP019:CABJYANXX:7:505556&quot;
-[159] &quot;F166C1bP001:CABJYANXX:7:505560&quot; &quot;F166C1bP002:CABJYANXX:7:505561&quot;
-[161] &quot;F168C1bP003:CABJYANXX:7:505568&quot; &quot;F168C1bP005:CABJYANXX:7:505570&quot;
-[163] &quot;F168C1bP006:CABJYANXX:7:505571&quot; &quot;F168C1bP007:CABJYANXX:7:505572&quot;
-[165] &quot;F168C1bP008:CABJYANXX:7:505573&quot; &quot;F168C1bP013:CABJYANXX:7:505578&quot;
-[167] &quot;F169C1bP001:CABJYANXX:7:505579&quot; &quot;F169C1bP003:CABJYANXX:7:505581&quot;
-[169] &quot;F16C1bP006:CABV7ANXX:5:503953&quot;  &quot;F16C1bP007:CABV7ANXX:5:503954&quot; 
-[171] &quot;F170C1bP001:CABJYANXX:7:505586&quot; &quot;F170C1bP006:CABJYANXX:7:505590&quot;
-[173] &quot;F170C1bP014:CABJYANXX:7:505598&quot; &quot;F170C1bP016:CABJYANXX:7:505600&quot;
-[175] &quot;F171C1bP002:CA7RRANXX:6:500083&quot; &quot;F171C1bP002:CA7RRANXX:6:500040&quot;
-[177] &quot;F171C1bP004:CA7RRANXX:6:500085&quot; &quot;F171C1bP004:CA7RRANXX:6:500042&quot;
-[179] &quot;F171C1bP005:CA7RRANXX:6:500086&quot; &quot;F171C1bP005:CA7RRANXX:6:500043&quot;
-[181] &quot;F173C1bP003:CA7RRANXX:6:500090&quot; &quot;F173C1bP003:CA7RRANXX:6:500047&quot;
-[183] &quot;F173C1bP006:CA7RRANXX:6:500093&quot; &quot;F173C1bP006:CA7RRANXX:6:500050&quot;
-[185] &quot;F173C1bP008:CA7RRANXX:6:500052&quot; &quot;F173C1bP008:CA7RRANXX:6:500095&quot;
-[187] &quot;F174C1bP001:CA7RRANXX:6:500097&quot; &quot;F174C1bP001:CA7RRANXX:6:500054&quot;
-[189] &quot;F174C1bP002:CA7RRANXX:6:500098&quot; &quot;F174C1bP002:CA7RRANXX:6:500055&quot;
-[191] &quot;F179C1bP001:CA7RRANXX:6:500066&quot; &quot;F179C1bP001:CA7RRANXX:6:500109&quot;
-[193] &quot;F179C1bP002:CA7RRANXX:6:500110&quot; &quot;F179C1bP002:CA7RRANXX:6:500067&quot;
-[195] &quot;F17C1bP005:CABV7ANXX:5:503959&quot;  &quot;F17C1bP006:CABV7ANXX:5:503960&quot; 
-[197] &quot;F17C1bP012:CABV7ANXX:5:503966&quot;  &quot;F17C1bP013:CABV7ANXX:5:503967&quot; 
-[199] &quot;F180C1bP001:CA7RRANXX:6:500111&quot; &quot;F180C1bP001:CA7RRANXX:6:500068&quot;
-[201] &quot;F182C1bP001:CA7RRANXX:6:500125&quot; &quot;F182C1bP001:CA7RRANXX:6:500115&quot;
-[203] &quot;F182C1bP001:CA7RRANXX:6:500073&quot; &quot;F185C1bP001:CA7RRANXX:6:500079&quot;
-[205] &quot;F185C1bP001:CA7RRANXX:6:500121&quot; &quot;F185C1bP001:CA7RRANXX:6:500131&quot;
-[207] &quot;F185C1bP001:CA7RRANXX:6:500132&quot; &quot;F18C1bP005:CABV7ANXX:5:503972&quot; 
-[209] &quot;F19C1bP001:CABV7ANXX:6:504551&quot;  &quot;F19C1bP002:CABV7ANXX:6:504552&quot; 
-[211] &quot;F1C1bP002:CA7RRANXX:2:499654&quot;   &quot;F1C1bP003:CA7RRANXX:2:499655&quot;  
-[213] &quot;F1C1bP005:CA7RRANXX:2:499658&quot;   &quot;F1C1bP010:CA7RRANXX:2:499663&quot;  
-[215] &quot;F20C1bP001:CABV7ANXX:6:504557&quot;  &quot;F20C1bP004:CABV7ANXX:6:504560&quot; 
-[217] &quot;F27C1bP001:CABV7ANXX:6:504577&quot;  &quot;F27C1bP002:CABV7ANXX:6:504578&quot; 
-[219] &quot;F27C1bP005:CABV7ANXX:6:504581&quot;  &quot;F27C1bP006:CABV7ANXX:6:504582&quot; 
-[221] &quot;F27C1bP007:CABV7ANXX:6:504583&quot;  &quot;F27C1bP008:CABV7ANXX:6:504584&quot; 
-[223] &quot;F27C1bP012:CABV7ANXX:6:504588&quot;  &quot;F28C1bP002:CABV7ANXX:6:504591&quot; 
-[225] &quot;F28C1bP006:CABV7ANXX:6:504595&quot;  &quot;F28C1bP007:CABV7ANXX:6:504596&quot; 
-[227] &quot;F2C1bP006:CA7RRANXX:2:499672&quot;   &quot;F2C1bP007:CA7RRANXX:2:499673&quot;  
-[229] &quot;F2C1bP010:CA7RRANXX:2:499676&quot;   &quot;F2C1bP012:CA7RRANXX:2:499678&quot;  
-[231] &quot;F2C1bP015:CA7RRANXX:2:499681&quot;   &quot;F2C1bP017:CA7RRANXX:2:499683&quot;  
-[233] &quot;F2C1bP022:CA7RRANXX:2:499688&quot;   &quot;F2C1bP024:CA7RRANXX:2:499690&quot;  
-[235] &quot;F2C1bP028:CA7RRANXX:2:499694&quot;   &quot;F2C1bP029:CA7RRANXX:2:499695&quot;  
-[237] &quot;F2C1bP034:CA7RRANXX:2:499700&quot;   &quot;F2C1bP037:CA7RRANXX:2:499703&quot;  
-[239] &quot;F2C1bP038:CA7RRANXX:2:499704&quot;   &quot;F2C1bP039:CA7RRANXX:2:499705&quot;  
-[241] &quot;F30C1bP005:CABV7ANXX:6:504604&quot;  &quot;F30C1bP011:CABV7ANXX:6:504610&quot; 
-[243] &quot;F30C1bP013:CABV7ANXX:6:504612&quot;  &quot;F30C1bP015:CABV7ANXX:6:504614&quot; 
-[245] &quot;F30C1bP020:CABV7ANXX:6:504619&quot;  &quot;F30C1bP021:CABV7ANXX:6:504620&quot; 
-[247] &quot;F30C1bP022:CABV7ANXX:6:504621&quot;  &quot;F30C1bP023:CABV7ANXX:6:504622&quot; 
-[249] &quot;F30C1bP026:CABV7ANXX:6:504625&quot;  &quot;F30C1bP027:CABV7ANXX:6:504626&quot; 
-[251] &quot;F30C1bP029:CABV7ANXX:6:504628&quot;  &quot;F31C1bP001:CABV7ANXX:6:504629&quot; 
-[253] &quot;F31C1bP002:CABV7ANXX:6:504630&quot;  &quot;F31C1bP003:CABV7ANXX:6:504631&quot; 
-[255] &quot;F31C1bP006:CABV7ANXX:6:504634&quot;  &quot;F32C1bP003:CABV7ANXX:6:504637&quot; 
-[257] &quot;F32C1bP005:CABV7ANXX:6:504639&quot;  &quot;F32C1bP007:CABV7ANXX:6:504641&quot; 
-[259] &quot;F32C1bP008:CABV7ANXX:6:504642&quot;  &quot;F32C1bP010:CABV7ANXX:6:504644&quot; 
-[261] &quot;F32C1bP011:CABV7ANXX:7:504645&quot;  &quot;F33C1bP002:CABV7ANXX:7:504647&quot; 
-[263] &quot;F34C1bP001:CABV7ANXX:7:504649&quot;  &quot;F37C1bP002:CABV7ANXX:7:504674&quot; 
-[265] &quot;F3C1bP005:CA7RRANXX:2:499719&quot;   &quot;F3C1bP012:CA7RRANXX:2:499726&quot;  
-[267] &quot;F3C1bP014:CA7RRANXX:2:499728&quot;   &quot;F3C1bP017:CA7RRANXX:2:499731&quot;  
-[269] &quot;F3C1bP018:CA7RRANXX:2:499732&quot;   &quot;F3C1bP028:CA7RRANXX:2:499742&quot;  
-[271] &quot;F40C1bP004:CABV7ANXX:7:504692&quot;  &quot;F41C1bP001:CABV7ANXX:7:504695&quot; 
-[273] &quot;F41C1bP002:CABV7ANXX:7:504696&quot;  &quot;F42C1bP003:CABV7ANXX:7:504700&quot; 
-[275] &quot;F43C1bP002:CABV7ANXX:7:504702&quot;  &quot;F46C1bP001:CABV7ANXX:7:504710&quot; 
-[277] &quot;F46C1bP002:CABV7ANXX:7:504711&quot;  &quot;F48C1bP001:CABV7ANXX:7:504716&quot; 
-[279] &quot;F48C1bP002:CABV7ANXX:7:504717&quot;  &quot;F49C1bP001:CABV7ANXX:7:504719&quot; 
-[281] &quot;F49C1bP002:CABV7ANXX:7:504720&quot;  &quot;F4C1bP002:CA7RRANXX:2:499744&quot;  
-[283] &quot;F4C1bP003:CA7RRANXX:2:499745&quot;   &quot;F4C1bP006:CA7RRANXX:2:499748&quot;  
-[285] &quot;F4C1bP010:CABV7ANXX:4:503784&quot;   &quot;F4C1bP011:CABV7ANXX:4:503785&quot;  
-[287] &quot;F4C1bP014:CABV7ANXX:4:503788&quot;   &quot;F4C1bP018:CABV7ANXX:4:503792&quot;  
-[289] &quot;F51C1bP004:CABV7ANXX:7:504730&quot;  &quot;F55C1bP001:CABV7ANXX:7:504734&quot; 
-[291] &quot;F55C1bP004:CABV7ANXX:7:504737&quot;  &quot;F55C1bP006:CABV7ANXX:7:504739&quot; 
-[293] &quot;F55C1bP008:CABV7ANXX:8:504741&quot;  &quot;F55C1bP009:CABV7ANXX:8:504742&quot; 
-[295] &quot;F55C1bP010:CABV7ANXX:8:504743&quot;  &quot;F55C1bP014:CABV7ANXX:8:504747&quot; 
-[297] &quot;F55C1bP016:CABV7ANXX:8:504749&quot;  &quot;F55C1bP020:CABV7ANXX:8:504753&quot; 
-[299] &quot;F55C1bP023:CABV7ANXX:8:504756&quot;  &quot;F55C1bP024:CABV7ANXX:8:504757&quot; 
-[301] &quot;F55C1bP027:CABV7ANXX:8:504760&quot;  &quot;F55C1bP034:CABV7ANXX:8:504767&quot; 
-[303] &quot;F55C1bP035:CABV7ANXX:8:504768&quot;  &quot;F55C1bP036:CABV7ANXX:8:504769&quot; 
-[305] &quot;F55C1bP038:CABV7ANXX:8:504771&quot;  &quot;F56C1bP001:CABV7ANXX:8:504773&quot; 
-[307] &quot;F56C1bP004:CABV7ANXX:8:504776&quot;  &quot;F56C1bP005:CABV7ANXX:8:504777&quot; 
-[309] &quot;F56C1bP007:CABV7ANXX:8:504779&quot;  &quot;F56C1bP015:CABV7ANXX:8:504787&quot; 
-[311] &quot;F56C1bP017:CABV7ANXX:8:504789&quot;  &quot;F56C1bP019:CABV7ANXX:8:504791&quot; 
-[313] &quot;F56C1bP024:CABV7ANXX:8:504796&quot;  &quot;F56C1bP028:CABV7ANXX:8:504800&quot; 
-[315] &quot;F56C1bP029:CABV7ANXX:8:504801&quot;  &quot;F56C1bP034:CABV7ANXX:8:504806&quot; 
-[317] &quot;F56C1bP036:CABV7ANXX:8:504808&quot;  &quot;F56C1bP037:CABV7ANXX:8:504809&quot; 
-[319] &quot;F56C1bP038:CABV7ANXX:8:504810&quot;  &quot;F56C1bP042:CABV7ANXX:8:504815&quot; 
-[321] &quot;F57C1bP005:CABV7ANXX:8:504826&quot;  &quot;F57C1bP008:CABV7ANXX:8:504829&quot; 
-[323] &quot;F57C1bP010:CABV7ANXX:8:504831&quot;  &quot;F57C1bP011:CABV7ANXX:8:504832&quot; 
-[325] &quot;F57C1bP012:CABV7ANXX:8:504833&quot;  &quot;F57C1bP014:CABV7ANXX:8:504835&quot; 
-[327] &quot;F57C1bP015:CABV7ANXX:8:504836&quot;  &quot;F57C1bP016:CABJYANXX:1:504837&quot; 
-[329] &quot;F58C1bP003:CABJYANXX:1:504840&quot;  &quot;F58C1bP007:CABJYANXX:1:504844&quot; 
-[331] &quot;F58C1bP009:CABJYANXX:1:504846&quot;  &quot;F58C1bP010:CABJYANXX:1:504847&quot; 
-[333] &quot;F58C1bP012:CABJYANXX:1:504849&quot;  &quot;F59C1bP002:CABJYANXX:1:504852&quot; 
-[335] &quot;F59C1bP004:CABJYANXX:1:504854&quot;  &quot;F5C1bP009:CABV7ANXX:4:503801&quot;  
-[337] &quot;F5C1bP011:CABV7ANXX:4:503803&quot;   &quot;F5C1bP012:CABV7ANXX:4:503804&quot;  
-[339] &quot;F60C1bP001:CABJYANXX:1:504858&quot;  &quot;F60C1bP003:CABJYANXX:1:504860&quot; 
-[341] &quot;F60C1bP006:CABJYANXX:1:504863&quot;  &quot;F60C1bP008:CABJYANXX:1:504866&quot; 
-[343] &quot;F60C1bP009:CABJYANXX:1:504867&quot;  &quot;F60C1bP010:CABJYANXX:1:504868&quot; 
-[345] &quot;F60C1bP011:CABJYANXX:1:504869&quot;  &quot;F61C1bP002:CABJYANXX:1:504871&quot; 
-[347] &quot;F62C1bP001:CABJYANXX:1:504885&quot;  &quot;F62C1bP002:CABJYANXX:1:504886&quot; 
-[349] &quot;F62C1bP004:CABJYANXX:1:504888&quot;  &quot;F62C1bP007:CABJYANXX:1:504891&quot; 
-[351] &quot;F62C1bP009:CABJYANXX:1:504893&quot;  &quot;F62C1bP015:CABJYANXX:1:504899&quot; 
-[353] &quot;F62C1bP016:CABJYANXX:1:504900&quot;  &quot;F62C1bP017:CABJYANXX:1:504901&quot; 
-[355] &quot;F63C1bP004:CABJYANXX:1:504911&quot;  &quot;F63C1bP005:CABJYANXX:1:504912&quot; 
-[357] &quot;F63C1bP010:CABJYANXX:1:504917&quot;  &quot;F63C1bP012:CABJYANXX:1:504919&quot; 
-[359] &quot;F63C1bP013:CABJYANXX:1:504920&quot;  &quot;F64C1bP002:CABJYANXX:1:504923&quot; 
-[361] &quot;F64C1bP004:CABJYANXX:1:504925&quot;  &quot;F64C1bP008:CABJYANXX:1:504929&quot; 
-[363] &quot;F64C1bP013:CABJYANXX:2:504934&quot;  &quot;F64C1bP018:CABJYANXX:2:504939&quot; 
-[365] &quot;F64C1bP020:CABJYANXX:2:504941&quot;  &quot;F64C1bP022:CABJYANXX:2:504943&quot; 
-[367] &quot;F64C1bP023:CABJYANXX:2:504944&quot;  &quot;F64C1bP025:CABJYANXX:2:504946&quot; 
-[369] &quot;F64C1bP032:CABJYANXX:2:504953&quot;  &quot;F64C1bP035:CABJYANXX:2:504956&quot; 
-[371] &quot;F64C1bP043:CABJYANXX:2:504964&quot;  &quot;F64C1bP044:CABJYANXX:2:504965&quot; 
-[373] &quot;F64C1bP046:CABJYANXX:2:504967&quot;  &quot;F64C1bP055:CABJYANXX:2:504976&quot; 
-[375] &quot;F64C1bP058:CABJYANXX:2:504979&quot;  &quot;F64C1bP061:CABJYANXX:2:504982&quot; 
-[377] &quot;F64C1bP063:CABJYANXX:2:504984&quot;  &quot;F64C1bP067:CABJYANXX:2:504988&quot; 
-[379] &quot;F65C1bP004:CABJYANXX:2:504994&quot;  &quot;F65C1bP005:CABJYANXX:2:504995&quot; 
-[381] &quot;F65C1bP006:CABJYANXX:2:504996&quot;  &quot;F66C1bP001:CABJYANXX:2:504998&quot; 
-[383] &quot;F66C1bP004:CABJYANXX:2:505001&quot;  &quot;F66C1bP006:CABJYANXX:2:505003&quot; 
-[385] &quot;F67C1bP001:CABJYANXX:2:505004&quot;  &quot;F68C1bP001:CABJYANXX:2:505013&quot; 
-[387] &quot;F68C1bP004:CABJYANXX:2:505016&quot;  &quot;F68C1bP005:CABJYANXX:2:505017&quot; 
-[389] &quot;F68C1bP006:CABJYANXX:2:505018&quot;  &quot;F69C1bP004:CABJYANXX:2:505025&quot; 
-[391] &quot;F69C1bP007:CABJYANXX:2:505028&quot;  &quot;F6C1bP008:CABV7ANXX:4:503815&quot;  
-[393] &quot;F6C1bP009:CABV7ANXX:4:503816&quot;   &quot;F6C1bP016:CABV7ANXX:4:503823&quot;  
-[395] &quot;F6C1bP019:CABV7ANXX:4:503826&quot;   &quot;F70C1bP001:CABJYANXX:3:505029&quot; 
-[397] &quot;F70C1bP002:CABJYANXX:3:505030&quot;  &quot;F70C1bP004:CABJYANXX:3:505032&quot; 
-[399] &quot;F71C1bP001:CABJYANXX:3:505033&quot;  &quot;F71C1bP004:CABJYANXX:3:505036&quot; 
-[401] &quot;F71C1bP005:CABJYANXX:3:505037&quot;  &quot;F71C1bP008:CABJYANXX:3:505040&quot; 
-[403] &quot;F72C1bP001:CABJYANXX:3:505041&quot;  &quot;F73C1bP004:CABJYANXX:3:505045&quot; 
-[405] &quot;F73C1bP006:CABJYANXX:3:505047&quot;  &quot;F73C1bP007:CABJYANXX:3:505048&quot; 
-[407] &quot;F73C1bP010:CABJYANXX:3:505051&quot;  &quot;F73C1bP011:CABJYANXX:3:505052&quot; 
-[409] &quot;F74C1bP003:CABJYANXX:3:505057&quot;  &quot;F74C1bP005:CABJYANXX:3:505059&quot; 
-[411] &quot;F74C1bP006:CABJYANXX:3:505060&quot;  &quot;F75C1bP005:CABJYANXX:3:505065&quot; 
-[413] &quot;F75C1bP008:CABJYANXX:3:505068&quot;  &quot;F75C1bP009:CABJYANXX:3:505069&quot; 
-[415] &quot;F75C1bP012:CABJYANXX:3:505072&quot;  &quot;F75C1bP015:CABJYANXX:3:505075&quot; 
-[417] &quot;F76C1bP001:CABJYANXX:3:505082&quot;  &quot;F78C1bP001:CABJYANXX:3:505088&quot; 
-[419] &quot;F78C1bP002:CABJYANXX:3:505089&quot;  &quot;F78C1bP003:CABJYANXX:3:505090&quot; 
-[421] &quot;F78C1bP004:CABJYANXX:3:505091&quot;  &quot;F79C1bP002:CABJYANXX:3:505093&quot; 
-[423] &quot;F79C1bP003:CABJYANXX:3:505094&quot;  &quot;F79C1bP004:CABJYANXX:3:505095&quot; 
-[425] &quot;F7C1bP003:CABV7ANXX:4:503830&quot;   &quot;F7C1bP017:CABV7ANXX:4:503844&quot;  
-[427] &quot;F7C1bP024:CABV7ANXX:4:503851&quot;   &quot;F7C1bP027:CABV7ANXX:4:503854&quot;  
-[429] &quot;F7C1bP031:CABV7ANXX:4:503858&quot;   &quot;F7C1bP035:CABV7ANXX:4:503862&quot;  
-[431] &quot;F81C1bP001:CABJYANXX:3:505098&quot;  &quot;F81C1bP003:CABJYANXX:3:505100&quot; 
-[433] &quot;F81C1bP004:CABJYANXX:3:505101&quot;  &quot;F81C1bP006:CABJYANXX:3:505103&quot; 
-[435] &quot;F82C1bP001:CABJYANXX:3:505104&quot;  &quot;F84C1bP001:CABJYANXX:3:505111&quot; 
-[437] &quot;F84C1bP002:CABJYANXX:3:505112&quot;  &quot;F86C1bP003:CABJYANXX:3:505117&quot; 
-[439] &quot;F86C1bP004:CABJYANXX:3:505118&quot;  &quot;F86C1bP006:CABJYANXX:3:505120&quot; 
-[441] &quot;F87C1bP001:CABJYANXX:3:505123&quot;  &quot;F87C1bP005:CABJYANXX:4:505127&quot; 
-[443] &quot;F87C1bP006:CABJYANXX:4:505128&quot;  &quot;F87C1bP009:CABJYANXX:4:505131&quot; 
-[445] &quot;F88C1bP002:CABJYANXX:4:505134&quot;  &quot;F88C1bP003:CABJYANXX:4:505135&quot; 
-[447] &quot;F88C1bP006:CABJYANXX:4:505139&quot;  &quot;F88C1bP015:CABJYANXX:4:505148&quot; 
-[449] &quot;F88C1bP016:CABJYANXX:4:505149&quot;  &quot;F88C1bP019:CABJYANXX:4:505152&quot; 
-[451] &quot;F88C1bP020:CABJYANXX:4:505153&quot;  &quot;F88C1bP032:CABJYANXX:4:505164&quot; 
-[453] &quot;F89C1bP007:CABJYANXX:4:505177&quot;  &quot;F89C1bP013:CABJYANXX:4:505183&quot; 
-[455] &quot;F89C1bP016:CABJYANXX:4:505186&quot;  &quot;F89C1bP020:CABJYANXX:4:505190&quot; 
-[457] &quot;F8C1bP001:CABV7ANXX:4:503866&quot;   &quot;F90C1bP001:CABJYANXX:4:505195&quot; 
-[459] &quot;F90C1bP003:CABJYANXX:4:505197&quot;  &quot;F90C1bP006:CABJYANXX:4:505200&quot; 
-[461] &quot;F91C1bP010:CABJYANXX:4:505210&quot;  &quot;F92C1bP001:CABJYANXX:4:505213&quot; 
-[463] &quot;F92C1bP003:CABJYANXX:4:505215&quot;  &quot;F92C1bP004:CABJYANXX:4:505216&quot; 
-[465] &quot;F92C1bP005:CABJYANXX:4:505217&quot;  &quot;F92C1bP006:CABJYANXX:4:505218&quot; 
-[467] &quot;F95C1bP001:CA7RRANXX:3:499752&quot;  &quot;F95C1bP003:CA7RRANXX:3:499754&quot; 
-[469] &quot;F96C1bP004:CA7RRANXX:3:499762&quot;  &quot;F96C1bP008:CA7RRANXX:3:499766&quot; 
-[471] &quot;F97C1bP001:CA7RRANXX:3:499769&quot;  &quot;F97C1bP002:CA7RRANXX:3:499770&quot; 
-[473] &quot;F98C1BP001:CA7RRANXX:3:499772&quot;  &quot;F98C1BP002:CA7RRANXX:3:499773&quot; 
-[475] &quot;F98C1BP005:CA7RRANXX:3:499777&quot;  &quot;F98C1BP006:CA7RRANXX:3:499778&quot; 
-[477] &quot;F98C1BP007:CA7RRANXX:3:499779&quot;  &quot;F98C1BP009:CA7RRANXX:3:499781&quot; 
-[479] &quot;F9C1bP001:CABV7ANXX:4:503869&quot;   &quot;F9C1bP004:CABV7ANXX:4:503872&quot;  
-[481] &quot;F9C1bP005:CABV7ANXX:4:503873&quot;   &quot;F9C1bP006:CABV7ANXX:4:503874&quot;  
-[483] &quot;FI02C1bP001:CA7RRANXX:3:499794&quot; &quot;F122C1bP002:CA7RRANXX:4:499885&quot;
-[485] &quot;F122C1bP005:CA7RRANXX:4:499888&quot; &quot;F134C1bP003:CABJYANXX:5:505224&quot;
-[487] &quot;F134C1bP010:CABJYANXX:5:505231&quot; &quot;F135C1bP001:CABJYANXX:5:505238&quot;
-[489] &quot;F154C1bP004:CA7RRANXX:5:500035&quot; &quot;F154C1bP010:CABJYANXX:6:505416&quot;
-[491] &quot;F154C1bP032:CABJYANXX:6:505438&quot; &quot;F158C1bP004:CABJYANXX:6:505461&quot;
-[493] &quot;F165C1bP005:CABJYANXX:7:505542&quot; &quot;F171C1bP001:CA7RRANXX:6:500082&quot;
-[495] &quot;F171C1bP001:CA7RRANXX:6:500039&quot; &quot;F173C1bP001:CA7RRANXX:6:500088&quot;
-[497] &quot;F173C1bP001:CA7RRANXX:6:500045&quot; &quot;F2C1bP018:CA7RRANXX:2:499684&quot;  
-[499] &quot;F2C1bP040:CA7RRANXX:2:499706&quot;   &quot;F2C1bP045:CA7RRANXX:2:499711&quot;  
-[501] &quot;F40C1bP002:CABV7ANXX:7:504690&quot;  &quot;F56C1bP009:CABV7ANXX:8:504781&quot; 
-[503] &quot;F62C1bP010:CABJYANXX:1:504894&quot;  &quot;F63C1bP003:CABJYANXX:1:504910&quot; 
-[505] &quot;F6C1bP006:CABV7ANXX:4:503812&quot;   &quot;F6C1bP020:CABV7ANXX:4:503827&quot;  
-[507] &quot;F88C1bP018:CABJYANXX:4:505151&quot;  &quot;F98C1BP008:CA7RRANXX:3:499780&quot; 
-[509] &quot;F99C1bP001:CA7RRANXX:3:499788&quot;  &quot;F158C1bP003:CABJYANXX:6:505460&quot;
-[511] &quot;F100C1bP002:CA7RRANXX:3:499790&quot; &quot;F105C1bP001:CA7RRANXX:3:499803&quot;
-[513] &quot;F106C1bP001:CA7RRANXX:3:499807&quot; &quot;F108C1bP001:CA7RRANXX:3:499815&quot;
-[515] &quot;F108C1bP003:CA7RRANXX:3:499817&quot; &quot;F10C1bP006:CABV7ANXX:5:503879&quot; 
-[517] &quot;F116C1bP012:CA7RRANXX:4:499847&quot; &quot;F116C1bP014:CA7RRANXX:4:499849&quot;
-[519] &quot;F11C1bP004:CABV7ANXX:5:503894&quot;  &quot;F11C1bP013:CABV7ANXX:5:503904&quot; 
-[521] &quot;F11C1bP021:CABV7ANXX:5:503912&quot;  &quot;F122C1bP008:CA7RRANXX:4:499891&quot;
-[523] &quot;F123C1bP002:CA7RRANXX:4:499895&quot; &quot;F124C1bP003:CA7RRANXX:4:499904&quot;
-[525] &quot;F128C1bP002:CA7RRANXX:4:499921&quot; &quot;F128C1bP009:CA7RRANXX:4:499928&quot;
-[527] &quot;F132C1bP001:CA7RRANXX:4:499938&quot; &quot;F134C1bP002:CABJYANXX:5:505223&quot;
-[529] &quot;F136C1bP007:CABJYANXX:5:505245&quot; &quot;F137C1bP007:CABJYANXX:5:505253&quot;
-[531] &quot;F137C1bP015:CABJYANXX:5:505261&quot; &quot;F138C1bP001:CABJYANXX:5:505262&quot;
-[533] &quot;F141C1bP004:CABJYANXX:5:505282&quot; &quot;F144C1bP002:CABJYANXX:5:505299&quot;
-[535] &quot;F148C1bP001:CABJYANXX:5:505315&quot; &quot;F152C1bP003:CA7RRANXX:5:499954&quot;
-[537] &quot;F152C1bP021:CA7RRANXX:5:499971&quot; &quot;F153C1bP002:CA7RRANXX:5:499975&quot;
-[539] &quot;F153C1bP015:CA7RRANXX:5:499988&quot; &quot;F153C1bP023:CA7RRANXX:5:499996&quot;
-[541] &quot;F153C1bP025:CA7RRANXX:5:499998&quot; &quot;F153C1bP040:CA7RRANXX:5:500014&quot;
-[543] &quot;F153C1bP049:CA7RRANXX:5:500023&quot; &quot;F154C1bP006:CABJYANXX:6:505413&quot;
-[545] &quot;F154C1bP018:CABJYANXX:6:505424&quot; &quot;F154C1bP019:CABJYANXX:6:505425&quot;
-[547] &quot;F154C1bP029:CABJYANXX:6:505435&quot; &quot;F154C1bP030:CABJYANXX:6:505436&quot;
-[549] &quot;F155C1bP001:CABJYANXX:6:505444&quot; &quot;F158C1bP013:CABJYANXX:6:505470&quot;
-[551] &quot;F158C1bP015:CABJYANXX:6:505472&quot; &quot;F161C1bP004:CABJYANXX:6:505505&quot;
-[553] &quot;F162C1bP002:CABJYANXX:7:505509&quot; &quot;F164C1bP005:CABJYANXX:7:505533&quot;
-[555] &quot;F167C1bP001:CABJYANXX:7:505563&quot; &quot;F168C1bP010:CABJYANXX:7:505575&quot;
-[557] &quot;F168C1bP011:CABJYANXX:7:505576&quot; &quot;F169C1bP004:CABJYANXX:7:505582&quot;
-[559] &quot;F169C1bP005:CABJYANXX:7:505583&quot; &quot;F180C1bP002:CA7RRANXX:6:500122&quot;
-[561] &quot;F180C1bP002:CA7RRANXX:6:500112&quot; &quot;F180C1bP002:CA7RRANXX:6:500070&quot;
-[563] &quot;F18C1bP004:CABV7ANXX:5:503971&quot;  &quot;F1C1bP012:CA7RRANXX:2:499665&quot;  
-[565] &quot;F26C1bP001:CABV7ANXX:6:504576&quot;  &quot;F27C1bP010:CABV7ANXX:6:504586&quot; 
-[567] &quot;F2C1bP031:CA7RRANXX:2:499697&quot;   &quot;F30C1bP024:CABV7ANXX:6:504623&quot; 
-[569] &quot;F32C1bP001:CABV7ANXX:6:504635&quot;  &quot;F34C1bP002:CABV7ANXX:7:504650&quot; 
-[571] &quot;F35C1bP007:CABV7ANXX:7:504667&quot;  &quot;F3C1bP015:CA7RRANXX:2:499729&quot;  
-[573] &quot;F4C1bP013:CABV7ANXX:4:503787&quot;   &quot;F4C1bP016:CABV7ANXX:4:503790&quot;  
-[575] &quot;F50C1bP001:CABV7ANXX:7:504724&quot;  &quot;F54C1bP001:CABV7ANXX:7:504733&quot; 
-[577] &quot;F55C1bP013:CABV7ANXX:8:504746&quot;  &quot;F56C1bP012:CABV7ANXX:8:504784&quot; 
-[579] &quot;F56C1bP014:CABV7ANXX:8:504786&quot;  &quot;F56C1bP023:CABV7ANXX:8:504795&quot; 
-[581] &quot;F56C1bP025:CABV7ANXX:8:504797&quot;  &quot;F56C1bP027:CABV7ANXX:8:504799&quot; 
-[583] &quot;F56C1bP032:CABV7ANXX:8:504804&quot;  &quot;F56C1bP040:CABV7ANXX:8:504812&quot; 
-[585] &quot;F57C1bP009:CABV7ANXX:8:504830&quot;  &quot;F58C1bP011:CABJYANXX:1:504848&quot; 
-[587] &quot;F61C1bP003:CABJYANXX:1:504872&quot;  &quot;F62C1bP008:CABJYANXX:1:504892&quot; 
-[589] &quot;F62C1bP014:CABJYANXX:1:504898&quot;  &quot;F62C1bP022:CABJYANXX:1:504906&quot; 
-[591] &quot;F64C1bP024:CABJYANXX:2:504945&quot;  &quot;F64C1bP050:CABJYANXX:2:504971&quot; 
-[593] &quot;F64C1bP065:CABJYANXX:2:504986&quot;  &quot;F66C1bP002:CABJYANXX:2:504999&quot; 
-[595] &quot;F66C1bP005:CABJYANXX:2:505002&quot;  &quot;F67C1bP004:CABJYANXX:2:505007&quot; 
-[597] &quot;F6C1bP004:CABV7ANXX:4:503810&quot;   &quot;F73C1bP013:CABJYANXX:3:505054&quot; 
-[599] &quot;F74C1bP001:CABJYANXX:3:505055&quot;  &quot;F74C1bP002:CABJYANXX:3:505056&quot; 
-[601] &quot;F75C1bP003:CABJYANXX:3:505063&quot;  &quot;F75C1bP011:CABJYANXX:3:505071&quot; 
-[603] &quot;F75C1bP021:CABJYANXX:3:505081&quot;  &quot;F77C1bP002:CABJYANXX:3:505085&quot; 
-[605] &quot;F79C1bP001:CABJYANXX:3:505092&quot;  &quot;F7C1bP001:CABV7ANXX:4:503828&quot;  
-[607] &quot;F7C1bP007:CABV7ANXX:4:503834&quot;   &quot;F7C1bP018:CABV7ANXX:4:503845&quot;  
-[609] &quot;F7C1bP022:CABV7ANXX:4:503849&quot;   &quot;F81C1bP005:CABJYANXX:3:505102&quot; 
-[611] &quot;F87C1bP002:CABJYANXX:3:505124&quot;  &quot;F87C1bP003:CABJYANXX:4:505125&quot; 
-[613] &quot;F87C1bP004:CABJYANXX:4:505126&quot;  &quot;F87C1bP007:CABJYANXX:4:505129&quot; 
-[615] &quot;F87C1bP008:CABJYANXX:4:505130&quot;  &quot;F88C1bP012:CABJYANXX:4:505145&quot; 
-[617] &quot;F88C1bP026:CABJYANXX:4:505159&quot;  &quot;F89C1bP005:CABJYANXX:4:505175&quot; 
-[619] &quot;F89C1bP022:CABJYANXX:4:505192&quot;  &quot;F89C1bP024:CABJYANXX:4:505194&quot; 
-[621] &quot;F90C1bP002:CABJYANXX:4:505196&quot;  &quot;F91C1bP001:CABJYANXX:4:505201&quot; 
-[623] &quot;F91C1bP004:CABJYANXX:4:505204&quot;  &quot;F92C1bP002:CABJYANXX:4:505214&quot; 
-[625] &quot;F94C1bP002:CA7RRANXX:3:499751&quot;  &quot;F96C1bP001:CA7RRANXX:3:499759&quot; 
-[627] &quot;F9C1bP003:CABV7ANXX:4:503871&quot;   &quot;F161C1bP006:CABJYANXX:6:505507&quot;
-[629] &quot;F30C1bP018:CABV7ANXX:6:504617&quot; </code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>pc_scores <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="st">       </span><span class="kw">mutate</span>(<span class="dt">GeneticGroup=</span><span class="ot">NA</span>,</span>
-<span id="cb14-3"><a href="#cb14-3"></a>           <span class="dt">GeneticGroup=</span><span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;NR17F&quot;</span>,FullSampleName,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2a&quot;</span>,</span>
-<span id="cb14-4"><a href="#cb14-4"></a>                                      <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C2bF&quot;</span>,FullSampleName,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2b&quot;</span>,</span>
-<span id="cb14-5"><a href="#cb14-5"></a>                                             <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;^F&quot;</span>,FullSampleName) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,FullSampleName),<span class="st">&quot;C1a&quot;</span>,</span>
-<span id="cb14-6"><a href="#cb14-6"></a>                                                    <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,FullSampleName,</span>
-<span id="cb14-7"><a href="#cb14-7"></a>                                                                 <span class="dt">ignore.case =</span> T),<span class="st">&quot;C1b&quot;</span>,<span class="st">&quot;nrTP_plus_IITA&quot;</span>))))) </span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="kw">library</span>(viridis)</span>
-<span id="cb14-9"><a href="#cb14-9"></a>pc1v2&lt;-pc_scores <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb14-10"><a href="#cb14-10"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>PC1,<span class="dt">y=</span>PC2,<span class="dt">color=</span>GeneticGroup)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb14-11"><a href="#cb14-11"></a><span class="st">      </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb14-12"><a href="#cb14-12"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_color_viridis_d</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb14-13"><a href="#cb14-13"></a><span class="st">      </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;PC1 (5%)&quot;</span>,<span class="dt">y=</span><span class="st">&quot;PC2 (3%)&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&#39;none&#39;</span>)</span>
-<span id="cb14-14"><a href="#cb14-14"></a>pc3v4&lt;-pc_scores <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb14-15"><a href="#cb14-15"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>PC3,<span class="dt">y=</span>PC4,<span class="dt">color=</span>GeneticGroup)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb14-16"><a href="#cb14-16"></a><span class="st">      </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb14-17"><a href="#cb14-17"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_color_viridis_d</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb14-18"><a href="#cb14-18"></a><span class="st">      </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;PC3 (3%)&quot;</span>,<span class="dt">y=</span><span class="st">&quot;PC4 (2%)&quot;</span>)</span>
-<span id="cb14-19"><a href="#cb14-19"></a><span class="kw">plot_grid</span>(pc1v2,pc3v4)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">#rm(list=ls());gc()</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(cowplot); </span>
+<span id="cb10-3"><a href="#cb10-3"></a>pc_scores&lt;-<span class="kw">readRDS</span>(<span class="st">&quot;output/PCscores_NRCRI_SamplesForGP_73119.rds&quot;</span>)</span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co">#pc_scores$FullSampleName %&gt;% grep(&quot;C1b&quot;,.,value = T,ignore.case = T)</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>pc_scores <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="st">       </span><span class="kw">mutate</span>(<span class="dt">GeneticGroup=</span><span class="ot">NA</span>,</span>
+<span id="cb10-7"><a href="#cb10-7"></a>           <span class="dt">GeneticGroup=</span><span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;NR17F&quot;</span>,FullSampleName,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2a&quot;</span>,</span>
+<span id="cb10-8"><a href="#cb10-8"></a>                                      <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C2bF&quot;</span>,FullSampleName,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2b&quot;</span>,</span>
+<span id="cb10-9"><a href="#cb10-9"></a>                                             <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;^F&quot;</span>,FullSampleName) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,FullSampleName),<span class="st">&quot;C1a&quot;</span>,</span>
+<span id="cb10-10"><a href="#cb10-10"></a>                                                    <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,FullSampleName,</span>
+<span id="cb10-11"><a href="#cb10-11"></a>                                                                 <span class="dt">ignore.case =</span> T),<span class="st">&quot;C1b&quot;</span>,<span class="st">&quot;nrTP_plus_IITA&quot;</span>))))) </span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="kw">library</span>(viridis)</span>
+<span id="cb10-13"><a href="#cb10-13"></a>pc1v2&lt;-pc_scores <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>PC1,<span class="dt">y=</span>PC2,<span class="dt">color=</span>GeneticGroup)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="st">      </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_color_viridis_d</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="st">      </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;PC1 (5%)&quot;</span>,<span class="dt">y=</span><span class="st">&quot;PC2 (3%)&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&#39;none&#39;</span>)</span>
+<span id="cb10-18"><a href="#cb10-18"></a>pc3v4&lt;-pc_scores <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>PC3,<span class="dt">y=</span>PC4,<span class="dt">color=</span>GeneticGroup)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="st">      </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb10-21"><a href="#cb10-21"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_color_viridis_d</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="st">      </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;PC3 (3%)&quot;</span>,<span class="dt">y=</span><span class="st">&quot;PC4 (2%)&quot;</span>)</span>
+<span id="cb10-23"><a href="#cb10-23"></a><span class="kw">plot_grid</span>(pc1v2,pc3v4)</span></code></pre></div>
 <p><img src="figure/GetGEBVs.Rmd/unnamed-chunk-9-1.png" width="864" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>pc_scores <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>PC5,<span class="dt">y=</span>PC6,<span class="dt">color=</span>GeneticGroup)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="st">      </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb15-4"><a href="#cb15-4"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_color_viridis_d</span>() <span class="op">+</span><span class="st"> </span></span>
-<span id="cb15-5"><a href="#cb15-5"></a><span class="st">      </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;PC5 (2%)&quot;</span>,<span class="dt">y=</span><span class="st">&quot;PC6 (2%)&quot;</span>)</span></code></pre></div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+381f019
+</td>
+<td>
+wolfemd
+</td>
+<td>
+2019-11-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>pc_scores <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>PC5,<span class="dt">y=</span>PC6,<span class="dt">color=</span>GeneticGroup)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="st">      </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_color_viridis_d</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="st">      </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;PC5 (2%)&quot;</span>,<span class="dt">y=</span><span class="st">&quot;PC6 (2%)&quot;</span>)</span></code></pre></div>
 <p><img src="figure/GetGEBVs.Rmd/unnamed-chunk-10-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+381f019
+</td>
+<td>
+wolfemd
+</td>
+<td>
+2019-11-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="prediction" class="section level1">
 <h1>Prediction</h1>
 <div id="load-data-for-pred" class="section level2">
 <h2>Load data for pred</h2>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>()</span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); </span>
-<span id="cb16-3"><a href="#cb16-3"></a>K&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/workdir/NRCRI_2019GS/Kinship_NRCRI_SamplesForGP_73119.rds&quot;</span>))</span>
-<span id="cb16-4"><a href="#cb16-4"></a></span>
-<span id="cb16-5"><a href="#cb16-5"></a>blupsNoOut&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/iita_blupsForCrossVal_outliersRemoved_73019.rds&quot;</span>)</span>
-<span id="cb16-6"><a href="#cb16-6"></a>blups&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/iita_blupsForCrossVal_72619.rds&quot;</span>)</span>
-<span id="cb16-7"><a href="#cb16-7"></a>blups&lt;-blupsNoOut <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-8"><a href="#cb16-8"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-9"><a href="#cb16-9"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-10"><a href="#cb16-10"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
-<span id="cb16-11"><a href="#cb16-11"></a>            blups <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-12"><a href="#cb16-12"></a><span class="st">                  </span><span class="kw">filter</span>(Dataset<span class="op">==</span><span class="st">&quot;HistoricalDataIncluded&quot;</span> <span class="op">|</span><span class="st"> </span>Trait <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;BRNHT1&quot;</span>,<span class="st">&quot;PLTHT&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-13"><a href="#cb16-13"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-14"><a href="#cb16-14"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">FALSE</span>))</span>
-<span id="cb16-15"><a href="#cb16-15"></a>gidsInPhenos&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span>blups <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>() <span class="op">%$%</span><span class="st"> </span>GID <span class="op">%&gt;%</span><span class="st"> </span>unique)</span>
-<span id="cb16-16"><a href="#cb16-16"></a>gidsInPhenos <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
-<span id="cb16-17"><a href="#cb16-17"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
-<span id="cb16-18"><a href="#cb16-18"></a>            <span class="kw">tibble</span>(<span class="dt">dartName=</span><span class="kw">rownames</span>(K) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;TMS18&quot;</span>,.,<span class="dt">value=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-19"><a href="#cb16-19"></a><span class="st">                  </span><span class="kw">separate</span>(dartName,<span class="kw">c</span>(<span class="st">&quot;GID&quot;</span>,<span class="st">&quot;dartID&quot;</span>),<span class="st">&quot;_&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-20"><a href="#cb16-20"></a><span class="st">                  </span><span class="kw">semi_join</span>(gidsInPhenos) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-21"><a href="#cb16-21"></a><span class="st">                  </span><span class="kw">group_by</span>(GID) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-22"><a href="#cb16-22"></a><span class="st">                  </span><span class="kw">slice</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-23"><a href="#cb16-23"></a><span class="st">                  </span><span class="kw">ungroup</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-24"><a href="#cb16-24"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">NewName=</span><span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(dartName),dartName,GID))</span>
-<span id="cb16-25"><a href="#cb16-25"></a>blups <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
-<span id="cb16-26"><a href="#cb16-26"></a><span class="st">      </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-27"><a href="#cb16-27"></a><span class="st">      </span><span class="kw">left_join</span>(gidsInPhenos) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-28"><a href="#cb16-28"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GID=</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-29"><a href="#cb16-29"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>dartName,<span class="op">-</span>dartID,<span class="op">-</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-30"><a href="#cb16-30"></a><span class="st">      </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-31"><a href="#cb16-31"></a><span class="st">      </span><span class="kw">group_by</span>(Trait,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-32"><a href="#cb16-32"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;trainingData&quot;</span>)</span>
-<span id="cb16-33"><a href="#cb16-33"></a>iitablups&lt;-blups</span>
-<span id="cb16-34"><a href="#cb16-34"></a>iitaGIDsInPhenos&lt;-gidsInPhenos</span>
-<span id="cb16-35"><a href="#cb16-35"></a></span>
-<span id="cb16-36"><a href="#cb16-36"></a>blupsNoOut&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_72719.rds&quot;</span>)</span>
-<span id="cb16-37"><a href="#cb16-37"></a>blups&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds&quot;</span>)</span>
-<span id="cb16-38"><a href="#cb16-38"></a>blups&lt;-blupsNoOut <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-39"><a href="#cb16-39"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-40"><a href="#cb16-40"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-41"><a href="#cb16-41"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
-<span id="cb16-42"><a href="#cb16-42"></a>            blups <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-43"><a href="#cb16-43"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-44"><a href="#cb16-44"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">FALSE</span>))</span>
-<span id="cb16-45"><a href="#cb16-45"></a>gidsInPhenos&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span>blups <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>() <span class="op">%$%</span><span class="st"> </span>GID <span class="op">%&gt;%</span><span class="st"> </span>unique)</span>
-<span id="cb16-46"><a href="#cb16-46"></a>gidsInPhenos <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
-<span id="cb16-47"><a href="#cb16-47"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>GID) <span class="op">%&gt;%</span></span>
-<span id="cb16-48"><a href="#cb16-48"></a><span class="st">      </span><span class="kw">filter</span>(NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-49"><a href="#cb16-49"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
-<span id="cb16-50"><a href="#cb16-50"></a>            gidsInPhenos <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-51"><a href="#cb16-51"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>GID) <span class="op">%&gt;%</span></span>
-<span id="cb16-52"><a href="#cb16-52"></a><span class="st">                  </span><span class="kw">filter</span>(<span class="op">!</span>NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-53"><a href="#cb16-53"></a><span class="st">                  </span><span class="kw">left_join</span>(</span>
-<span id="cb16-54"><a href="#cb16-54"></a>                        <span class="kw">tibble</span>(<span class="dt">FullSampleName=</span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,<span class="kw">rownames</span>(K),<span class="dt">ignore.case =</span> T,<span class="dt">value =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-55"><a href="#cb16-55"></a><span class="st">                              </span><span class="kw">separate</span>(FullSampleName,<span class="kw">c</span>(<span class="st">&quot;NewName&quot;</span>,<span class="st">&quot;GBS_ID&quot;</span>),<span class="st">&quot;:&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-56"><a href="#cb16-56"></a><span class="st">                              </span><span class="kw">mutate</span>(<span class="dt">NewName=</span><span class="kw">paste0</span>(<span class="st">&quot;NR16&quot;</span>,NewName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-57"><a href="#cb16-57"></a><span class="st">                              </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>GBS_ID)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-58"><a href="#cb16-58"></a><span class="st">                  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(FullSampleName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-59"><a href="#cb16-59"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-60"><a href="#cb16-60"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>FullSampleName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-61"><a href="#cb16-61"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
-<span id="cb16-62"><a href="#cb16-62"></a>            gidsInPhenos <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-63"><a href="#cb16-63"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>GID) <span class="op">%&gt;%</span></span>
-<span id="cb16-64"><a href="#cb16-64"></a><span class="st">                  </span><span class="kw">filter</span>(<span class="op">!</span>NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K),</span>
-<span id="cb16-65"><a href="#cb16-65"></a>                         <span class="kw">grepl</span>(<span class="st">&quot;C2a&quot;</span>,NewName,<span class="dt">ignore.case =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-66"><a href="#cb16-66"></a><span class="st">                  </span><span class="kw">left_join</span>(</span>
-<span id="cb16-67"><a href="#cb16-67"></a>                        <span class="kw">tibble</span>(<span class="dt">dartName=</span><span class="kw">grep</span>(<span class="st">&quot;C2a&quot;</span>,<span class="kw">rownames</span>(K),<span class="dt">ignore.case =</span> T,<span class="dt">value =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-68"><a href="#cb16-68"></a><span class="st">                              </span><span class="kw">separate</span>(dartName,<span class="kw">c</span>(<span class="st">&quot;dartID&quot;</span>,<span class="st">&quot;NewName&quot;</span>),<span class="st">&quot;</span><span class="ch">\\</span><span class="st">.</span><span class="ch">\\</span><span class="st">.</span><span class="ch">\\</span><span class="st">.&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-69"><a href="#cb16-69"></a><span class="st">                              </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(NewName))) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-70"><a href="#cb16-70"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span><span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(dartName),dartName,NewName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-71"><a href="#cb16-71"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>dartName,<span class="op">-</span>dartID)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-72"><a href="#cb16-72"></a><span class="st">      </span><span class="kw">filter</span>(NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K))</span>
-<span id="cb16-73"><a href="#cb16-73"></a>blups <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
-<span id="cb16-74"><a href="#cb16-74"></a><span class="st">      </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-75"><a href="#cb16-75"></a><span class="st">      </span><span class="kw">left_join</span>(gidsInPhenos) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-76"><a href="#cb16-76"></a><span class="st">      </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(NewName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-77"><a href="#cb16-77"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GID=</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-78"><a href="#cb16-78"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-79"><a href="#cb16-79"></a><span class="st">      </span><span class="kw">group_by</span>(Trait,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-80"><a href="#cb16-80"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;trainingData&quot;</span>)</span>
-<span id="cb16-81"><a href="#cb16-81"></a>blups <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
-<span id="cb16-82"><a href="#cb16-82"></a><span class="st">      </span><span class="kw">unnest</span>(trainingData) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-83"><a href="#cb16-83"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
-<span id="cb16-84"><a href="#cb16-84"></a>            iitablups <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-85"><a href="#cb16-85"></a><span class="st">                  </span><span class="kw">filter</span>(Trait <span class="op">%in%</span><span class="st"> </span>blups<span class="op">$</span>Trait) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-86"><a href="#cb16-86"></a><span class="st">                  </span><span class="kw">unnest</span>(trainingData)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-87"><a href="#cb16-87"></a><span class="st">      </span><span class="kw">group_by</span>(Trait,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-88"><a href="#cb16-88"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;trainingData&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-89"><a href="#cb16-89"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;IITAaugmented&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-90"><a href="#cb16-90"></a><span class="st">      </span><span class="kw">bind_rows</span>(blups <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-91"><a href="#cb16-91"></a><span class="st">                      </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;NRCRIonly&quot;</span>))</span>
-<span id="cb16-92"><a href="#cb16-92"></a><span class="kw">rm</span>(blupsNoOut,gidsInPhenos,iitaGIDsInPhenos,iitablups, proctime); <span class="kw">gc</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>()</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); </span>
+<span id="cb12-3"><a href="#cb12-3"></a>K&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/workdir/NRCRI_2019GS/Kinship_NRCRI_SamplesForGP_73119.rds&quot;</span>))</span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a>blupsNoOut&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/iita_blupsForCrossVal_outliersRemoved_73019.rds&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6"></a>blups&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/iita_blupsForCrossVal_72619.rds&quot;</span>)</span>
+<span id="cb12-7"><a href="#cb12-7"></a>blups&lt;-blupsNoOut <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
+<span id="cb12-11"><a href="#cb12-11"></a>            blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="st">                  </span><span class="kw">filter</span>(Dataset<span class="op">==</span><span class="st">&quot;HistoricalDataIncluded&quot;</span> <span class="op">|</span><span class="st"> </span>Trait <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;BRNHT1&quot;</span>,<span class="st">&quot;PLTHT&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">FALSE</span>))</span>
+<span id="cb12-15"><a href="#cb12-15"></a>gidsInPhenos&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span>blups <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>() <span class="op">%$%</span><span class="st"> </span>GID <span class="op">%&gt;%</span><span class="st"> </span>unique)</span>
+<span id="cb12-16"><a href="#cb12-16"></a>gidsInPhenos <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
+<span id="cb12-18"><a href="#cb12-18"></a>            <span class="kw">tibble</span>(<span class="dt">dartName=</span><span class="kw">rownames</span>(K) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;TMS18&quot;</span>,.,<span class="dt">value=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="st">                  </span><span class="kw">separate</span>(dartName,<span class="kw">c</span>(<span class="st">&quot;GID&quot;</span>,<span class="st">&quot;dartID&quot;</span>),<span class="st">&quot;_&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-20"><a href="#cb12-20"></a><span class="st">                  </span><span class="kw">semi_join</span>(gidsInPhenos) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-21"><a href="#cb12-21"></a><span class="st">                  </span><span class="kw">group_by</span>(GID) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-22"><a href="#cb12-22"></a><span class="st">                  </span><span class="kw">slice</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="st">                  </span><span class="kw">ungroup</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-24"><a href="#cb12-24"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">NewName=</span><span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(dartName),dartName,GID))</span>
+<span id="cb12-25"><a href="#cb12-25"></a>blups <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb12-26"><a href="#cb12-26"></a><span class="st">      </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-27"><a href="#cb12-27"></a><span class="st">      </span><span class="kw">left_join</span>(gidsInPhenos) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-28"><a href="#cb12-28"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GID=</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-29"><a href="#cb12-29"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>dartName,<span class="op">-</span>dartID,<span class="op">-</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-30"><a href="#cb12-30"></a><span class="st">      </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-31"><a href="#cb12-31"></a><span class="st">      </span><span class="kw">group_by</span>(Trait,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-32"><a href="#cb12-32"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;trainingData&quot;</span>)</span>
+<span id="cb12-33"><a href="#cb12-33"></a>iitablups&lt;-blups</span>
+<span id="cb12-34"><a href="#cb12-34"></a>iitaGIDsInPhenos&lt;-gidsInPhenos</span>
+<span id="cb12-35"><a href="#cb12-35"></a></span>
+<span id="cb12-36"><a href="#cb12-36"></a>blupsNoOut&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_72719.rds&quot;</span>)</span>
+<span id="cb12-37"><a href="#cb12-37"></a>blups&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds&quot;</span>)</span>
+<span id="cb12-38"><a href="#cb12-38"></a>blups&lt;-blupsNoOut <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-39"><a href="#cb12-39"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-40"><a href="#cb12-40"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-41"><a href="#cb12-41"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
+<span id="cb12-42"><a href="#cb12-42"></a>            blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-43"><a href="#cb12-43"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-44"><a href="#cb12-44"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="ot">FALSE</span>))</span>
+<span id="cb12-45"><a href="#cb12-45"></a>gidsInPhenos&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span>blups <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>() <span class="op">%$%</span><span class="st"> </span>GID <span class="op">%&gt;%</span><span class="st"> </span>unique)</span>
+<span id="cb12-46"><a href="#cb12-46"></a>gidsInPhenos <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb12-47"><a href="#cb12-47"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>GID) <span class="op">%&gt;%</span></span>
+<span id="cb12-48"><a href="#cb12-48"></a><span class="st">      </span><span class="kw">filter</span>(NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-49"><a href="#cb12-49"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
+<span id="cb12-50"><a href="#cb12-50"></a>            gidsInPhenos <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-51"><a href="#cb12-51"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>GID) <span class="op">%&gt;%</span></span>
+<span id="cb12-52"><a href="#cb12-52"></a><span class="st">                  </span><span class="kw">filter</span>(<span class="op">!</span>NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-53"><a href="#cb12-53"></a><span class="st">                  </span><span class="kw">left_join</span>(</span>
+<span id="cb12-54"><a href="#cb12-54"></a>                        <span class="kw">tibble</span>(<span class="dt">FullSampleName=</span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,<span class="kw">rownames</span>(K),<span class="dt">ignore.case =</span> T,<span class="dt">value =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-55"><a href="#cb12-55"></a><span class="st">                              </span><span class="kw">separate</span>(FullSampleName,<span class="kw">c</span>(<span class="st">&quot;NewName&quot;</span>,<span class="st">&quot;GBS_ID&quot;</span>),<span class="st">&quot;:&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-56"><a href="#cb12-56"></a><span class="st">                              </span><span class="kw">mutate</span>(<span class="dt">NewName=</span><span class="kw">paste0</span>(<span class="st">&quot;NR16&quot;</span>,NewName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-57"><a href="#cb12-57"></a><span class="st">                              </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>GBS_ID)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-58"><a href="#cb12-58"></a><span class="st">                  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(FullSampleName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-59"><a href="#cb12-59"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-60"><a href="#cb12-60"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>FullSampleName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-61"><a href="#cb12-61"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
+<span id="cb12-62"><a href="#cb12-62"></a>            gidsInPhenos <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-63"><a href="#cb12-63"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span>GID) <span class="op">%&gt;%</span></span>
+<span id="cb12-64"><a href="#cb12-64"></a><span class="st">                  </span><span class="kw">filter</span>(<span class="op">!</span>NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K),</span>
+<span id="cb12-65"><a href="#cb12-65"></a>                         <span class="kw">grepl</span>(<span class="st">&quot;C2a&quot;</span>,NewName,<span class="dt">ignore.case =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-66"><a href="#cb12-66"></a><span class="st">                  </span><span class="kw">left_join</span>(</span>
+<span id="cb12-67"><a href="#cb12-67"></a>                        <span class="kw">tibble</span>(<span class="dt">dartName=</span><span class="kw">grep</span>(<span class="st">&quot;C2a&quot;</span>,<span class="kw">rownames</span>(K),<span class="dt">ignore.case =</span> T,<span class="dt">value =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-68"><a href="#cb12-68"></a><span class="st">                              </span><span class="kw">separate</span>(dartName,<span class="kw">c</span>(<span class="st">&quot;dartID&quot;</span>,<span class="st">&quot;NewName&quot;</span>),<span class="st">&quot;</span><span class="ch">\\</span><span class="st">.</span><span class="ch">\\</span><span class="st">.</span><span class="ch">\\</span><span class="st">.&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-69"><a href="#cb12-69"></a><span class="st">                              </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(NewName))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-70"><a href="#cb12-70"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">NewName=</span><span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(dartName),dartName,NewName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-71"><a href="#cb12-71"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>dartName,<span class="op">-</span>dartID)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-72"><a href="#cb12-72"></a><span class="st">      </span><span class="kw">filter</span>(NewName <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K))</span>
+<span id="cb12-73"><a href="#cb12-73"></a>blups <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb12-74"><a href="#cb12-74"></a><span class="st">      </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-75"><a href="#cb12-75"></a><span class="st">      </span><span class="kw">left_join</span>(gidsInPhenos) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-76"><a href="#cb12-76"></a><span class="st">      </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(NewName)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-77"><a href="#cb12-77"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GID=</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-78"><a href="#cb12-78"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>NewName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-79"><a href="#cb12-79"></a><span class="st">      </span><span class="kw">group_by</span>(Trait,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-80"><a href="#cb12-80"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;trainingData&quot;</span>)</span>
+<span id="cb12-81"><a href="#cb12-81"></a>blups <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb12-82"><a href="#cb12-82"></a><span class="st">      </span><span class="kw">unnest</span>(trainingData) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-83"><a href="#cb12-83"></a><span class="st">      </span><span class="kw">bind_rows</span>(</span>
+<span id="cb12-84"><a href="#cb12-84"></a>            iitablups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-85"><a href="#cb12-85"></a><span class="st">                  </span><span class="kw">filter</span>(Trait <span class="op">%in%</span><span class="st"> </span>blups<span class="op">$</span>Trait) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-86"><a href="#cb12-86"></a><span class="st">                  </span><span class="kw">unnest</span>(trainingData)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-87"><a href="#cb12-87"></a><span class="st">      </span><span class="kw">group_by</span>(Trait,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-88"><a href="#cb12-88"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;trainingData&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-89"><a href="#cb12-89"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;IITAaugmented&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-90"><a href="#cb12-90"></a><span class="st">      </span><span class="kw">bind_rows</span>(blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-91"><a href="#cb12-91"></a><span class="st">                      </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;NRCRIonly&quot;</span>))</span>
+<span id="cb12-92"><a href="#cb12-92"></a><span class="kw">rm</span>(blupsNoOut,gidsInPhenos,iitaGIDsInPhenos,iitablups, proctime); <span class="kw">gc</span>()</span></code></pre></div>
 </div>
 <div id="get-gebvs" class="section level2">
 <h2>Get GEBVs</h2>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">require</span>(sommer)</span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="kw">require</span>(furrr)</span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="kw">options</span>(<span class="dt">future.globals.maxSize=</span> <span class="dv">1500</span><span class="op">*</span><span class="dv">1024</span><span class="op">^</span><span class="dv">2</span>)</span>
-<span id="cb17-4"><a href="#cb17-4"></a><span class="kw">options</span>(<span class="dt">mc.cores=</span><span class="dv">40</span>)</span>
-<span id="cb17-5"><a href="#cb17-5"></a><span class="kw">plan</span>(multiprocess)</span>
-<span id="cb17-6"><a href="#cb17-6"></a>proctime&lt;-<span class="kw">proc.time</span>()</span>
-<span id="cb17-7"><a href="#cb17-7"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb17-8"><a href="#cb17-8"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GEBV=</span><span class="kw">future_pmap</span>(.,<span class="cf">function</span>(Trait,Dataset,OutliersRemoved,trainingData){</span>
-<span id="cb17-9"><a href="#cb17-9"></a>            trndata&lt;-trainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb17-10"><a href="#cb17-10"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">factor</span>(GID,<span class="dt">levels=</span><span class="kw">rownames</span>(K)))</span>
-<span id="cb17-11"><a href="#cb17-11"></a>            fit &lt;-<span class="st"> </span><span class="kw">mmer</span>(<span class="dt">fixed =</span> drgBLUP <span class="op">~</span><span class="dv">1</span>,</span>
-<span id="cb17-12"><a href="#cb17-12"></a>                        <span class="dt">random =</span> <span class="op">~</span><span class="kw">vs</span>(GID,<span class="dt">Gu=</span>K),</span>
-<span id="cb17-13"><a href="#cb17-13"></a>                        <span class="dt">weights =</span> WT,</span>
-<span id="cb17-14"><a href="#cb17-14"></a>                        <span class="dt">data=</span>trndata)</span>
-<span id="cb17-15"><a href="#cb17-15"></a>            x&lt;-fit<span class="op">$</span>U<span class="op">$</span><span class="st">`</span><span class="dt">u:GID</span><span class="st">`</span><span class="op">$</span>drgBLUP </span>
-<span id="cb17-16"><a href="#cb17-16"></a>            gebvs&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span><span class="kw">names</span>(x),</span>
-<span id="cb17-17"><a href="#cb17-17"></a>                          <span class="dt">GEBV=</span><span class="kw">as.numeric</span>(x))</span>
-<span id="cb17-18"><a href="#cb17-18"></a>            <span class="kw">saveRDS</span>(gebvs,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;output/&quot;</span>,</span>
-<span id="cb17-19"><a href="#cb17-19"></a>                                      <span class="st">&quot;GEBV_&quot;</span>,Trait,<span class="st">&quot;_&quot;</span>,Dataset,<span class="st">&quot;_OutliersEqual&quot;</span>,OutliersRemoved,<span class="st">&quot;_NRCRI_73119.rds&quot;</span>))</span>
-<span id="cb17-20"><a href="#cb17-20"></a>            <span class="kw">rm</span>(fit); <span class="kw">gc</span>()}))</span>
-<span id="cb17-21"><a href="#cb17-21"></a><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>proctime</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">require</span>(sommer)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">require</span>(furrr)</span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="kw">options</span>(<span class="dt">future.globals.maxSize=</span> <span class="dv">1500</span><span class="op">*</span><span class="dv">1024</span><span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">options</span>(<span class="dt">mc.cores=</span><span class="dv">40</span>)</span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="kw">plan</span>(multiprocess)</span>
+<span id="cb13-6"><a href="#cb13-6"></a>proctime&lt;-<span class="kw">proc.time</span>()</span>
+<span id="cb13-7"><a href="#cb13-7"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GEBV=</span><span class="kw">future_pmap</span>(.,<span class="cf">function</span>(Trait,Dataset,OutliersRemoved,trainingData){</span>
+<span id="cb13-9"><a href="#cb13-9"></a>            trndata&lt;-trainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">factor</span>(GID,<span class="dt">levels=</span><span class="kw">rownames</span>(K)))</span>
+<span id="cb13-11"><a href="#cb13-11"></a>            fit &lt;-<span class="st"> </span><span class="kw">mmer</span>(<span class="dt">fixed =</span> drgBLUP <span class="op">~</span><span class="dv">1</span>,</span>
+<span id="cb13-12"><a href="#cb13-12"></a>                        <span class="dt">random =</span> <span class="op">~</span><span class="kw">vs</span>(GID,<span class="dt">Gu=</span>K),</span>
+<span id="cb13-13"><a href="#cb13-13"></a>                        <span class="dt">weights =</span> WT,</span>
+<span id="cb13-14"><a href="#cb13-14"></a>                        <span class="dt">data=</span>trndata)</span>
+<span id="cb13-15"><a href="#cb13-15"></a>            x&lt;-fit<span class="op">$</span>U<span class="op">$</span><span class="st">`</span><span class="dt">u:GID</span><span class="st">`</span><span class="op">$</span>drgBLUP </span>
+<span id="cb13-16"><a href="#cb13-16"></a>            gebvs&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span><span class="kw">names</span>(x),</span>
+<span id="cb13-17"><a href="#cb13-17"></a>                          <span class="dt">GEBV=</span><span class="kw">as.numeric</span>(x))</span>
+<span id="cb13-18"><a href="#cb13-18"></a>            <span class="kw">saveRDS</span>(gebvs,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;output/&quot;</span>,</span>
+<span id="cb13-19"><a href="#cb13-19"></a>                                      <span class="st">&quot;GEBV_&quot;</span>,Trait,<span class="st">&quot;_&quot;</span>,Dataset,<span class="st">&quot;_OutliersEqual&quot;</span>,OutliersRemoved,<span class="st">&quot;_NRCRI_73119.rds&quot;</span>))</span>
+<span id="cb13-20"><a href="#cb13-20"></a>            <span class="kw">rm</span>(fit); <span class="kw">gc</span>()}))</span>
+<span id="cb13-21"><a href="#cb13-21"></a><span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>proctime</span></code></pre></div>
 </div>
 <div id="format-gebv" class="section level2">
 <h2>Format GEBV</h2>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr);</span>
-<span id="cb18-2"><a href="#cb18-2"></a>gebvs&lt;-<span class="kw">list.files</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="st">      </span><span class="kw">grep</span>(<span class="st">&quot;GEBV_&quot;</span>,.,<span class="dt">value =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="st">      </span><span class="kw">grep</span>(<span class="st">&quot;_NRCRI_73119.rds&quot;</span>,.,<span class="dt">value =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="st">      </span><span class="kw">tibble</span>(<span class="dt">Files=</span>.) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;GEBV_&quot;</span>,<span class="st">&quot;&quot;</span>,Files),</span>
-<span id="cb18-7"><a href="#cb18-7"></a>             <span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;_NRCRI_73119.rds&quot;</span>,<span class="st">&quot;&quot;</span>,Trait)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="st">      </span><span class="kw">separate</span>(Trait,<span class="kw">c</span>(<span class="st">&quot;Trait&quot;</span>,<span class="st">&quot;Dataset&quot;</span>,<span class="st">&quot;OutliersRemoved&quot;</span>),<span class="st">&quot;_&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-9"><a href="#cb18-9"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="kw">gsub</span>(<span class="st">&quot;OutliersEqual&quot;</span>,<span class="st">&quot;&quot;</span>,OutliersRemoved),</span>
-<span id="cb18-10"><a href="#cb18-10"></a>             <span class="dt">Files=</span><span class="kw">map</span>(Files,<span class="op">~</span><span class="kw">readRDS</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-11"><a href="#cb18-11"></a><span class="st">      </span><span class="kw">unnest</span>(Files)</span>
-<span id="cb18-12"><a href="#cb18-12"></a>gebvs <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
-<span id="cb18-13"><a href="#cb18-13"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GeneticGroup=</span><span class="ot">NA</span>,</span>
-<span id="cb18-14"><a href="#cb18-14"></a>             <span class="dt">GeneticGroup=</span><span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;NR17F&quot;</span>,GID,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2a&quot;</span>,</span>
-<span id="cb18-15"><a href="#cb18-15"></a>                                 <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C2bF&quot;</span>,GID,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2b&quot;</span>,</span>
-<span id="cb18-16"><a href="#cb18-16"></a>                                        <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;^F&quot;</span>,GID) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,GID),<span class="st">&quot;C1a&quot;</span>,</span>
-<span id="cb18-17"><a href="#cb18-17"></a>                                               <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,GID,</span>
-<span id="cb18-18"><a href="#cb18-18"></a>                                                            <span class="dt">ignore.case =</span> T),<span class="st">&quot;C1b&quot;</span>,<span class="st">&quot;nrTP_plus_IITA&quot;</span>))))) </span>
-<span id="cb18-19"><a href="#cb18-19"></a>gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-20"><a href="#cb18-20"></a><span class="st">      </span><span class="kw">count</span>(GeneticGroup)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr);</span>
+<span id="cb14-2"><a href="#cb14-2"></a>gebvs&lt;-<span class="kw">list.files</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="st">      </span><span class="kw">grep</span>(<span class="st">&quot;GEBV_&quot;</span>,.,<span class="dt">value =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="st">      </span><span class="kw">grep</span>(<span class="st">&quot;_NRCRI_73119.rds&quot;</span>,.,<span class="dt">value =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="st">      </span><span class="kw">tibble</span>(<span class="dt">Files=</span>.) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;GEBV_&quot;</span>,<span class="st">&quot;&quot;</span>,Files),</span>
+<span id="cb14-7"><a href="#cb14-7"></a>             <span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;_NRCRI_73119.rds&quot;</span>,<span class="st">&quot;&quot;</span>,Trait)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="st">      </span><span class="kw">separate</span>(Trait,<span class="kw">c</span>(<span class="st">&quot;Trait&quot;</span>,<span class="st">&quot;Dataset&quot;</span>,<span class="st">&quot;OutliersRemoved&quot;</span>),<span class="st">&quot;_&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">OutliersRemoved=</span><span class="kw">gsub</span>(<span class="st">&quot;OutliersEqual&quot;</span>,<span class="st">&quot;&quot;</span>,OutliersRemoved),</span>
+<span id="cb14-10"><a href="#cb14-10"></a>             <span class="dt">Files=</span><span class="kw">map</span>(Files,<span class="op">~</span><span class="kw">readRDS</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="st">      </span><span class="kw">unnest</span>(Files)</span>
+<span id="cb14-12"><a href="#cb14-12"></a>gebvs <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GeneticGroup=</span><span class="ot">NA</span>,</span>
+<span id="cb14-14"><a href="#cb14-14"></a>             <span class="dt">GeneticGroup=</span><span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;NR17F&quot;</span>,GID,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2a&quot;</span>,</span>
+<span id="cb14-15"><a href="#cb14-15"></a>                                 <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C2bF&quot;</span>,GID,<span class="dt">ignore.case =</span> T),<span class="st">&quot;C2b&quot;</span>,</span>
+<span id="cb14-16"><a href="#cb14-16"></a>                                        <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;^F&quot;</span>,GID) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,GID),<span class="st">&quot;C1a&quot;</span>,</span>
+<span id="cb14-17"><a href="#cb14-17"></a>                                               <span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&quot;C1b&quot;</span>,GID,</span>
+<span id="cb14-18"><a href="#cb14-18"></a>                                                            <span class="dt">ignore.case =</span> T),<span class="st">&quot;C1b&quot;</span>,<span class="st">&quot;nrTP_plus_IITA&quot;</span>))))) </span>
+<span id="cb14-19"><a href="#cb14-19"></a>gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-20"><a href="#cb14-20"></a><span class="st">      </span><span class="kw">count</span>(GeneticGroup)</span></code></pre></div>
 </div>
 <div id="write-gebvs" class="section level2">
 <h2>Write GEBVs</h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw">spread</span>(Trait,GEBV) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw">group_by</span>(Dataset,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-4"><a href="#cb19-4"></a><span class="st">  </span><span class="kw">nest</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-5"><a href="#cb19-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">data=</span><span class="kw">pmap</span>(.,<span class="cf">function</span>(data,Dataset,OutliersRemoved){</span>
-<span id="cb19-6"><a href="#cb19-6"></a>    <span class="kw">write.csv</span>(data,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;output/GEBV_NRCRI_&quot;</span>,Dataset,<span class="st">&quot;_OutliersRemoved&quot;</span>,OutliersRemoved,<span class="st">&quot;_73119.csv&quot;</span>),</span>
-<span id="cb19-7"><a href="#cb19-7"></a>              <span class="dt">row.names =</span> F)}))</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="st">  </span><span class="kw">spread</span>(Trait,GEBV) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="st">  </span><span class="kw">group_by</span>(Dataset,OutliersRemoved) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="st">  </span><span class="kw">nest</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">data=</span><span class="kw">pmap</span>(.,<span class="cf">function</span>(data,Dataset,OutliersRemoved){</span>
+<span id="cb15-6"><a href="#cb15-6"></a>    <span class="kw">write.csv</span>(data,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;output/GEBV_NRCRI_&quot;</span>,Dataset,<span class="st">&quot;_OutliersRemoved&quot;</span>,OutliersRemoved,<span class="st">&quot;_73119.csv&quot;</span>),</span>
+<span id="cb15-7"><a href="#cb15-7"></a>              <span class="dt">row.names =</span> F)}))</span></code></pre></div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1384,7 +1174,7 @@ Vcells 1159599  8.9    8388608 64.0     102400  1943513 14.9</code></pre>
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 3.6.1 (2019-07-05)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
 Running under: macOS Mojave 10.14.6
