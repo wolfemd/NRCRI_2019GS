@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="wolfemd" />
+
+
+<title>Genomic Prediction Analysis - Stage II of II: Cross-validation Round 1</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/darkly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">NRCRI_2019GS</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Synopsis</a>
+</li>
+<li>
+  <a href="PrepareTrainingData.html">Prep. Training Data</a>
+</li>
+<li>
+  <a href="GetBLUPs.html">Get BLUPs</a>
+</li>
+<li>
+  <a href="CrossValidation.html">Cross-validation</a>
+</li>
+<li>
+  <a href="GetGEBVs.html">Get GEBV for GS C2</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/wolfemd/NRCRI_2019GS">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Genomic Prediction Analysis - Stage II of II: Cross-validation Round 1</h1>
+<h4 class="author">wolfemd</h4>
+<h4 class="date">2019-7-27</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-11-21
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>NRCRI_2019GS/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.5.0.9000). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20191121code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20191121)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20191121code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20191121)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong00ce81b"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> 00ce81b </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong00ce81b" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    output/.DS_Store
+
+Untracked files:
+    Untracked:  data/GBSdataMasterList_31818.csv
+    Untracked:  data/IITA_GBStoPhenoMaster_33018.csv
+    Untracked:  data/NRCRI_CleanedTrialData_72519.rds
+    Untracked:  data/NRCRI_ExptDesignsDetected_72719.rds
+    Untracked:  data/NRCRI_GBStoPhenoMaster_40318.csv
+    Untracked:  data/iita_blupsForCrossVal_72619.rds
+    Untracked:  data/iita_blupsForCrossVal_outliersRemoved_73019.rds
+    Untracked:  data/nrcri_blupsForCrossVal_72719.rds
+    Untracked:  data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds
+    Untracked:  output/CrossVal_72819/
+    Untracked:  output/CrossVal_73019/
+    Untracked:  output/GEBV_BRNHT1_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_BRNHT1_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_BRNHT1_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_BRNHT1_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS1_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS1_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS1_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS1_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS2_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS2_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS2_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_CGMS2_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_DM_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_DM_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_DM_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_DM_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_HI_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_HI_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_HI_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_HI_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_MCMDS_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_MCMDS_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_MCMDS_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_MCMDS_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_NRCRI_IITAaugmented_OutliersRemovedFALSE_73119.csv
+    Untracked:  output/GEBV_NRCRI_IITAaugmented_OutliersRemovedTRUE_73119.csv
+    Untracked:  output/GEBV_NRCRI_NRCRIonly_OutliersRemovedFALSE_73119.csv
+    Untracked:  output/GEBV_NRCRI_NRCRIonly_OutliersRemovedTRUE_73119.csv
+    Untracked:  output/GEBV_PLTHT_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_PLTHT_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_PLTHT_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_PLTHT_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logFYLD_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logFYLD_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logFYLD_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logFYLD_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logRTNO_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logRTNO_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logRTNO_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logRTNO_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logTOPYLD_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logTOPYLD_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logTOPYLD_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
+    Untracked:  output/GEBV_logTOPYLD_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
+    Untracked:  output/PCscores_NRCRI_SamplesForGP_73119.rds
+    Untracked:  workflowr_log.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+00ce81b
+</td>
+<td>
+wolfemd
+</td>
+<td>
+2019-11-21
+</td>
+<td>
+Publish the first set of analyses and files for NRCRI 2019 GS,
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="prep.-for-cross-validation" class="section level1">
+<h1>Prep. for cross-validation</h1>
+<div id="read-and-combine-dosages" class="section level2">
+<h2>Read and combine dosages</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(furrr); <span class="kw">library</span>(data.table)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">options</span>(<span class="dt">mc.cores=</span><span class="dv">18</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">plan</span>(multiprocess)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>snps&lt;-<span class="kw">tibble</span>(<span class="dt">Chr=</span><span class="dv">1</span><span class="op">:</span><span class="dv">18</span>) <span class="op">%&gt;%</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">raw=</span><span class="kw">future_pmap</span>(.,<span class="cf">function</span>(Chr,...){</span>
+<span id="cb1-6"><a href="#cb1-6"></a>        filename&lt;-<span class="kw">paste0</span>(<span class="st">&quot;/workdir/marnin/nextgenImputation2019/ImputationStageII_71219/chr&quot;</span>,Chr,</span>
+<span id="cb1-7"><a href="#cb1-7"></a>                         <span class="st">&quot;_ImputationReferencePanel_StageIIpartI_72219.raw&quot;</span>) </span>
+<span id="cb1-8"><a href="#cb1-8"></a>        snps&lt;-<span class="kw">fread</span>(filename,</span>
+<span id="cb1-9"><a href="#cb1-9"></a>                    <span class="dt">stringsAsFactors =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="st">            </span>as_tibble</span>
+<span id="cb1-11"><a href="#cb1-11"></a>        <span class="kw">return</span>(snps) }))</span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a>asModelsFit_nr&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_72719.rds&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a>asModelsFit_iita&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/iita_blupsForCrossVal_72619.rds&quot;</span>)</span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a>asModelsFit_nr <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="st">      </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
+<span id="cb1-20"><a href="#cb1-20"></a>            asModelsFit_nr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="st">                  </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="st">                  </span><span class="kw">select</span>(GID) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-24"><a href="#cb1-24"></a><span class="st">                  </span>distinct <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-25"><a href="#cb1-25"></a><span class="st">                  </span><span class="kw">left_join</span>(<span class="kw">tibble</span>(<span class="dt">FullSampleName=</span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,<span class="kw">rownames</span>(snps),<span class="dt">ignore.case =</span> T,<span class="dt">value =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-26"><a href="#cb1-26"></a><span class="st">                                  </span><span class="kw">separate</span>(FullSampleName,<span class="kw">c</span>(<span class="st">&quot;GID&quot;</span>,<span class="st">&quot;GBS_ID&quot;</span>),<span class="st">&quot;:&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-27"><a href="#cb1-27"></a><span class="st">                                  </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">paste0</span>(<span class="st">&quot;NR16&quot;</span>,GID)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-28"><a href="#cb1-28"></a><span class="st">                                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>GBS_ID)) <span class="op">%&gt;%</span></span>
+<span id="cb1-29"><a href="#cb1-29"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">FullSampleName=</span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(FullSampleName),GID,FullSampleName)))</span>
+<span id="cb1-30"><a href="#cb1-30"></a>asModelsFit_nr <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb1-31"><a href="#cb1-31"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GID=</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-32"><a href="#cb1-32"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-33"><a href="#cb1-33"></a><span class="st">      </span><span class="kw">group_by</span>(Trait) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-34"><a href="#cb1-34"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;blups&quot;</span>)</span>
+<span id="cb1-35"><a href="#cb1-35"></a></span>
+<span id="cb1-36"><a href="#cb1-36"></a>clonesWithBLUPs_nr&lt;-asModelsFit_nr <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(blups) <span class="op">%$%</span><span class="st"> </span><span class="kw">unique</span>(GID)</span>
+<span id="cb1-37"><a href="#cb1-37"></a>clonesWithBLUPs_iita&lt;-asModelsFit_iita <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(blups) <span class="op">%$%</span><span class="st"> </span><span class="kw">unique</span>(GID)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>snps <span class="op">%&lt;&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">raw=</span><span class="kw">map</span>(raw,<span class="cf">function</span>(raw){</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    out&lt;-raw <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="st">      </span>as.data.frame <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="st">      </span><span class="kw">column_to_rownames</span>(<span class="dt">var =</span> <span class="st">&quot;IID&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>FID,<span class="op">-</span>PAT,<span class="op">-</span>MAT,<span class="op">-</span>SEX,<span class="op">-</span>PHENOTYPE) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="st">      </span>as.matrix </span>
+<span id="cb2-8"><a href="#cb2-8"></a>    <span class="kw">return</span>(out) }))</span>
+<span id="cb2-9"><a href="#cb2-9"></a>snps&lt;-<span class="kw">reduce</span>(snps<span class="op">$</span>raw,cbind)</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a>snps_nr&lt;-snps[<span class="kw">rownames</span>(snps) <span class="op">%in%</span><span class="st"> </span>clonesWithBLUPs_nr,]</span>
+<span id="cb2-12"><a href="#cb2-12"></a>snps_all&lt;-snps[<span class="kw">rownames</span>(snps) <span class="op">%in%</span><span class="st"> </span><span class="kw">union</span>(clonesWithBLUPs_iita,</span>
+<span id="cb2-13"><a href="#cb2-13"></a>                                         clonesWithBLUPs_nr),]</span>
+<span id="cb2-14"><a href="#cb2-14"></a>snps_nrPlusGG&lt;-snps[<span class="kw">rownames</span>(snps) <span class="op">%in%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;TMS13F|TMS14F|TMS15F|2013_&quot;</span>,</span>
+<span id="cb2-15"><a href="#cb2-15"></a>                                             <span class="kw">union</span>(clonesWithBLUPs_iita,clonesWithBLUPs_nr),</span>
+<span id="cb2-16"><a href="#cb2-16"></a>                                             <span class="dt">value =</span> T,<span class="dt">invert =</span> T),]</span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="kw">dim</span>(snps_nr) <span class="co"># [1]  1870 84957</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="kw">dim</span>(snps_all) <span class="co"># [1]  8132 84957</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="kw">dim</span>(snps_nrPlusGG) <span class="co"># [1]  2731 84957</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>asModelsFit_nr <span class="op">%&lt;&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">blups=</span><span class="kw">map</span>(blups,<span class="op">~</span><span class="kw">filter</span>(.,GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(snps))))</span>
+<span id="cb3-3"><a href="#cb3-3"></a>asModelsFit_nr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Ntrain=</span><span class="kw">map_dbl</span>(blups,nrow)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="st">      </span><span class="kw">select</span>(Trait,H2,Ntrain) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p>Trait H2 Ntrain 1 DM 0.0252864279 970 2 logRTNO 0.0579231135 972 3 HI 0.1460550481 972 4 logFYLD 0.0918241317 972 5 logTOPYLD 0.1378653091 973 6 MCMDS 0.3339147816 1132 7 CGMS1 0.1513545399 1187 8 CGMS2 0.0396305451 1018 9 BRNHT1 0.0721262328 573 10 PLTHT 0.0008564113 646</p>
+</div>
+<div id="maf1-filter" class="section level2">
+<h2>MAF&gt;1% filter</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>maf_filter&lt;-<span class="cf">function</span>(snps,thresh){</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    freq&lt;-<span class="kw">colMeans</span>(snps, <span class="dt">na.rm=</span>T)<span class="op">/</span><span class="dv">2</span>; maf&lt;-freq;</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    maf[<span class="kw">which</span>(maf <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>)]&lt;-<span class="dv">1</span><span class="op">-</span>maf[<span class="kw">which</span>(maf <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>)]</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    snps1&lt;-snps[,<span class="kw">which</span>(maf<span class="op">&gt;</span>thresh)];</span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="kw">return</span>(snps1) }</span>
+<span id="cb4-6"><a href="#cb4-6"></a>snps_nr <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">maf_filter</span>(.,<span class="fl">0.01</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a>snps_all <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">maf_filter</span>(.,<span class="fl">0.01</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>snps_nrPlusGG <span class="op">%&lt;&gt;%</span><span class="st"> </span><span class="kw">maf_filter</span>(.,<span class="fl">0.01</span>)</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="kw">dim</span>(snps_nr) <span class="co"># [1]  1870 83234</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="kw">dim</span>(snps_all) <span class="co"># [1]  8132 83554</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="kw">dim</span>(snps_nrPlusGG) <span class="co"># [1]  2731 84150</span></span></code></pre></div>
+</div>
+<div id="make-kinships" class="section level2">
+<h2>Make kinships</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(rrBLUP)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>Knr&lt;-rrBLUP<span class="op">::</span><span class="kw">A.mat</span>(snps_nr<span class="dv">-1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a>KnrPlusGG&lt;-rrBLUP<span class="op">::</span><span class="kw">A.mat</span>(snps_nrPlusGG<span class="dv">-1</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>Kall&lt;-rrBLUP<span class="op">::</span><span class="kw">A.mat</span>(snps_all<span class="dv">-1</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">save</span>(Knr,KnrPlusGG,Kall,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/workdir/marnin/NRCRI_2019GS/&quot;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>                                    <span class="st">&quot;Kinships_NRCRI_ForCrossVal_72819.Rdata&quot;</span>))</span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="kw">saveRDS</span>(snps_nr,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/workdir/marnin/NRCRI_2019GS/DosageMatrix_NRCRI_TrainingPop_72819.rds&quot;</span>))</span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="kw">saveRDS</span>(snps_nrPlusGG,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/workdir/marnin/NRCRI_2019GS/DosageMatrix_NRCRI_TrainingPop_plusGG_72819.rds&quot;</span>))</span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="kw">saveRDS</span>(snps_all,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/workdir/marnin/NRCRI_2019GS/DosageMatrix_NRCRI_TrainingPop_plusAllIITA_72819.rds&quot;</span>))</span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="kw">rm</span>(snps_nr,snps_all,snps_nrPlusGG); <span class="kw">gc</span>()</span></code></pre></div>
+</div>
+</div>
+<div id="cross-validation" class="section level1">
+<h1>Cross-validation</h1>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>()</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); </span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">load</span>(<span class="dt">file=</span><span class="st">&quot;/workdir/marnin/NRCRI_2019GS/Kinships_NRCRI_ForCrossVal_72819.Rdata&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>asModelsFit_nr&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_72719.rds&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5"></a>asModelsFit_nr <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="st">      </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
+<span id="cb6-9"><a href="#cb6-9"></a>            asModelsFit_nr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="st">                  </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="st">                  </span><span class="kw">select</span>(GID) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="st">                  </span>distinct <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="st">                  </span><span class="kw">left_join</span>(<span class="kw">tibble</span>(<span class="dt">FullSampleName=</span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,<span class="kw">rownames</span>(Kall),<span class="dt">ignore.case =</span> T,<span class="dt">value =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="st">                                  </span><span class="kw">separate</span>(FullSampleName,<span class="kw">c</span>(<span class="st">&quot;GID&quot;</span>,<span class="st">&quot;GBS_ID&quot;</span>),<span class="st">&quot;:&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="st">                                  </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">paste0</span>(<span class="st">&quot;NR16&quot;</span>,GID)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="st">                                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>GBS_ID)) <span class="op">%&gt;%</span></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">FullSampleName=</span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(FullSampleName),GID,FullSampleName)))</span>
+<span id="cb6-19"><a href="#cb6-19"></a>asModelsFit_nr <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb6-20"><a href="#cb6-20"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GID=</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-21"><a href="#cb6-21"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-22"><a href="#cb6-22"></a><span class="st">      </span><span class="kw">group_by</span>(Trait) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-23"><a href="#cb6-23"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;blups&quot;</span>)</span>
+<span id="cb6-24"><a href="#cb6-24"></a></span>
+<span id="cb6-25"><a href="#cb6-25"></a>blups&lt;-asModelsFit_nr <span class="op">%&gt;%</span><span class="st">      </span></span>
+<span id="cb6-26"><a href="#cb6-26"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">blups=</span><span class="kw">map</span>(blups,<span class="op">~</span><span class="kw">filter</span>(.,GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(Kall)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-27"><a href="#cb6-27"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-28"><a href="#cb6-28"></a><span class="st">      </span><span class="kw">rename</span>(<span class="dt">nrTrainingData=</span>blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-29"><a href="#cb6-29"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
+<span id="cb6-30"><a href="#cb6-30"></a>            <span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;/workdir/marnin/IITA_2019GS/iita_blupsForCrossVal_72619.rds&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-31"><a href="#cb6-31"></a><span class="st">                  </span><span class="kw">rename</span>(<span class="dt">trainingData=</span>blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-32"><a href="#cb6-32"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">trainingData=</span><span class="kw">map</span>(trainingData,<span class="op">~</span><span class="kw">filter</span>(.,GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(Kall)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-33"><a href="#cb6-33"></a><span class="st">                  </span><span class="kw">filter</span>(Trait <span class="op">%in%</span><span class="st"> </span>asModelsFit_nr<span class="op">$</span>Trait) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-34"><a href="#cb6-34"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">keep=</span><span class="kw">ifelse</span>(Dataset<span class="op">==</span><span class="st">&quot;HistoricalDataIncluded&quot;</span> <span class="op">|</span><span class="st"> </span>Trait <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;BRNHT1&quot;</span>,<span class="st">&quot;PLTHT&quot;</span>),</span>
+<span id="cb6-35"><a href="#cb6-35"></a>                                     <span class="ot">TRUE</span>,<span class="ot">FALSE</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-36"><a href="#cb6-36"></a><span class="st">                  </span><span class="kw">filter</span>(keep<span class="op">==</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-37"><a href="#cb6-37"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,trainingData) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-38"><a href="#cb6-38"></a><span class="st">                  </span><span class="kw">rename</span>(<span class="dt">iiTrainingData=</span>trainingData))</span>
+<span id="cb6-39"><a href="#cb6-39"></a></span>
+<span id="cb6-40"><a href="#cb6-40"></a>c1a&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;^F&quot;</span>,.,<span class="dt">value =</span> T); <span class="kw">length</span>(c1a) <span class="co"># 899</span></span>
+<span id="cb6-41"><a href="#cb6-41"></a>c1b&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,.,<span class="dt">value =</span> T,<span class="dt">ignore.case =</span> T); <span class="kw">length</span>(c1b) <span class="co"># 629</span></span>
+<span id="cb6-42"><a href="#cb6-42"></a>c2&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;C2a|C2b&quot;</span>,.,<span class="dt">value =</span> T,<span class="dt">ignore.case =</span> T); <span class="kw">length</span>(c2) <span class="co"># 57</span></span>
+<span id="cb6-43"><a href="#cb6-43"></a>nrTP&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span>.[<span class="op">!</span>. <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(c1a,c1b,c2)]; <span class="kw">length</span>(nrTP); <span class="co"># 914</span></span>
+<span id="cb6-44"><a href="#cb6-44"></a>ggEtc&lt;-<span class="kw">rownames</span>(Kall) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-45"><a href="#cb6-45"></a><span class="st">      </span><span class="kw">grep</span>(<span class="st">&quot;2013_|TMS13F|TMS14F|TMS15F&quot;</span>,.,<span class="dt">value =</span> T,<span class="dt">invert =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-46"><a href="#cb6-46"></a><span class="st">      </span>.[<span class="op">!</span>. <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(nrTP,c1a,c1b,c2)]; <span class="kw">length</span>(ggEtc) <span class="co"># 861</span></span>
+<span id="cb6-47"><a href="#cb6-47"></a>allIITA&lt;-<span class="kw">rownames</span>(Kall) <span class="op">%&gt;%</span><span class="st"> </span>.[<span class="op">!</span>. <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(nrTP,c1a,c1b,c2)]; <span class="kw">length</span>(allIITA) <span class="co"># 6262</span></span>
+<span id="cb6-48"><a href="#cb6-48"></a></span>
+<span id="cb6-49"><a href="#cb6-49"></a>blups <span class="op">%&lt;&gt;%</span></span>
+<span id="cb6-50"><a href="#cb6-50"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">seed_of_seeds=</span><span class="dv">1</span><span class="op">:</span><span class="kw">n</span>(),</span>
+<span id="cb6-51"><a href="#cb6-51"></a>           <span class="dt">seeds=</span><span class="kw">map</span>(seed_of_seeds,<span class="cf">function</span>(seed_of_seeds,<span class="dt">reps=</span><span class="dv">5</span>){ </span>
+<span id="cb6-52"><a href="#cb6-52"></a>               <span class="kw">set.seed</span>(seed_of_seeds); </span>
+<span id="cb6-53"><a href="#cb6-53"></a>               outSeeds&lt;-<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>,<span class="dt">size =</span> reps,<span class="dt">replace =</span> F); </span>
+<span id="cb6-54"><a href="#cb6-54"></a>               <span class="kw">return</span>(outSeeds) }))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">mkdir</span> /workdir/NRCRI_2019GS/CrossVal_72819</span></code></pre></div>
+</div>
+<div id="function-nrcri-alone" class="section level2">
+<h2>Function: NRCRI alone</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># nrTrainingData&lt;-blups$nrTrainingData[[1]]; </span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co"># iiTrainingData&lt;-blups$iiTrainingData[[1]];</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co"># seeds&lt;-blups$seeds[[1]]; nfolds&lt;-5; reps&lt;-5;</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>crossValidateFunc&lt;-<span class="cf">function</span>(Trait,nrTrainingData,iiTrainingData,seeds,<span class="dt">nfolds=</span><span class="dv">5</span>,<span class="dt">reps=</span><span class="dv">5</span>,<span class="dt">ncores=</span><span class="dv">40</span>,...){</span>
+<span id="cb8-5"><a href="#cb8-5"></a>      K&lt;-Knr</span>
+<span id="cb8-6"><a href="#cb8-6"></a>      trntstdata&lt;-nrTrainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K))</span>
+<span id="cb8-8"><a href="#cb8-8"></a>      K1&lt;-K[<span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID,</span>
+<span id="cb8-9"><a href="#cb8-9"></a>            <span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID]</span>
+<span id="cb8-10"><a href="#cb8-10"></a>      <span class="kw">rm</span>(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); <span class="kw">gc</span>()</span>
+<span id="cb8-11"><a href="#cb8-11"></a>      <span class="co"># seed&lt;-seeds[[1]]</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>      <span class="co"># Nfolds=nfolds</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>      makeFolds&lt;-<span class="cf">function</span>(<span class="dt">Nfolds=</span>nfolds,seed){</span>
+<span id="cb8-14"><a href="#cb8-14"></a>            genotypes&lt;-<span class="kw">rownames</span>(K1)</span>
+<span id="cb8-15"><a href="#cb8-15"></a>            </span>
+<span id="cb8-16"><a href="#cb8-16"></a>            <span class="kw">set.seed</span>(seed)</span>
+<span id="cb8-17"><a href="#cb8-17"></a>            seed_per_group&lt;-<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>,<span class="dt">size =</span> <span class="dv">3</span>,<span class="dt">replace =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb8-18"><a href="#cb8-18"></a>      </span>
+<span id="cb8-19"><a href="#cb8-19"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">1</span>])</span>
+<span id="cb8-20"><a href="#cb8-20"></a>            FoldsThisRep_nrTP&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>nrTP],</span>
+<span id="cb8-21"><a href="#cb8-21"></a>                                       <span class="dt">Group=</span><span class="st">&quot;nrTP&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-25"><a href="#cb8-25"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb8-26"><a href="#cb8-26"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">2</span>])</span>
+<span id="cb8-27"><a href="#cb8-27"></a>            FoldsThisRep_c1a&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1a],</span>
+<span id="cb8-28"><a href="#cb8-28"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1a&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-29"><a href="#cb8-29"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-30"><a href="#cb8-30"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-32"><a href="#cb8-32"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb8-33"><a href="#cb8-33"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">3</span>])</span>
+<span id="cb8-34"><a href="#cb8-34"></a>            FoldsThisRep_c1b&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1b],</span>
+<span id="cb8-35"><a href="#cb8-35"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1b&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-36"><a href="#cb8-36"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-37"><a href="#cb8-37"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-38"><a href="#cb8-38"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-39"><a href="#cb8-39"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb8-40"><a href="#cb8-40"></a>           FoldsThisRep&lt;-<span class="kw">bind_rows</span>(FoldsThisRep_nrTP,FoldsThisRep_c1a) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-41"><a href="#cb8-41"></a><span class="st">                  </span><span class="kw">bind_rows</span>(FoldsThisRep_c1b) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb8-42"><a href="#cb8-42"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Test=</span><span class="kw">map</span>(Test,<span class="op">~</span>.<span class="op">$</span>CLONE),</span>
+<span id="cb8-43"><a href="#cb8-43"></a>                         <span class="dt">Train=</span><span class="kw">map</span>(Test,<span class="op">~</span>genotypes[<span class="op">!</span>genotypes <span class="op">%in%</span><span class="st"> </span>.]))</span>
+<span id="cb8-44"><a href="#cb8-44"></a>            <span class="kw">return</span>(FoldsThisRep) }</span>
+<span id="cb8-45"><a href="#cb8-45"></a>      </span>
+<span id="cb8-46"><a href="#cb8-46"></a>    crossval&lt;-<span class="kw">tibble</span>(<span class="dt">Rep=</span><span class="dv">1</span><span class="op">:</span>reps,<span class="dt">seed=</span><span class="kw">unlist</span>(seeds)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-47"><a href="#cb8-47"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">map2</span>(Rep,seed,<span class="op">~</span><span class="kw">makeFolds</span>(<span class="dt">Nfolds=</span>nfolds,<span class="dt">seed=</span>.y))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-48"><a href="#cb8-48"></a><span class="st">        </span><span class="kw">unnest</span>()</span>
+<span id="cb8-49"><a href="#cb8-49"></a></span>
+<span id="cb8-50"><a href="#cb8-50"></a>    <span class="co">#Test&lt;-crossval$Test[[1]]; Train&lt;-crossval$Train[[1]]</span></span>
+<span id="cb8-51"><a href="#cb8-51"></a>    crossValidate&lt;-<span class="cf">function</span>(Test,Train){ </span>
+<span id="cb8-52"><a href="#cb8-52"></a>      train&lt;-Train</span>
+<span id="cb8-53"><a href="#cb8-53"></a>      test&lt;-Test</span>
+<span id="cb8-54"><a href="#cb8-54"></a>      trainingdata&lt;-trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-55"><a href="#cb8-55"></a><span class="st">        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-56"><a href="#cb8-56"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">factor</span>(GID,<span class="dt">levels=</span><span class="kw">rownames</span>(K1)))</span>
+<span id="cb8-57"><a href="#cb8-57"></a>       </span>
+<span id="cb8-58"><a href="#cb8-58"></a>      <span class="kw">require</span>(sommer)</span>
+<span id="cb8-59"><a href="#cb8-59"></a>      proctime&lt;-<span class="kw">proc.time</span>()</span>
+<span id="cb8-60"><a href="#cb8-60"></a>      fit &lt;-<span class="st"> </span><span class="kw">mmer</span>(<span class="dt">fixed =</span> drgBLUP <span class="op">~</span><span class="dv">1</span>,</span>
+<span id="cb8-61"><a href="#cb8-61"></a>                  <span class="dt">random =</span> <span class="op">~</span><span class="kw">vs</span>(GID,<span class="dt">Gu=</span>K1),</span>
+<span id="cb8-62"><a href="#cb8-62"></a>                  <span class="dt">weights =</span> WT,</span>
+<span id="cb8-63"><a href="#cb8-63"></a>                  <span class="dt">data=</span>trainingdata) </span>
+<span id="cb8-64"><a href="#cb8-64"></a>      <span class="kw">proc.time</span>()<span class="op">-</span>proctime</span>
+<span id="cb8-65"><a href="#cb8-65"></a>      </span>
+<span id="cb8-66"><a href="#cb8-66"></a>      x&lt;-fit<span class="op">$</span>U<span class="op">$</span><span class="st">`</span><span class="dt">u:GID</span><span class="st">`</span><span class="op">$</span>drgBLUP </span>
+<span id="cb8-67"><a href="#cb8-67"></a>      gebvs&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span><span class="kw">names</span>(x),</span>
+<span id="cb8-68"><a href="#cb8-68"></a>                    <span class="dt">GEBV=</span><span class="kw">as.numeric</span>(x))</span>
+<span id="cb8-69"><a href="#cb8-69"></a>      </span>
+<span id="cb8-70"><a href="#cb8-70"></a>      accuracy&lt;-gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-71"><a href="#cb8-71"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-72"><a href="#cb8-72"></a><span class="st">            </span><span class="kw">left_join</span>(</span>
+<span id="cb8-73"><a href="#cb8-73"></a>                  trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-74"><a href="#cb8-74"></a><span class="st">                        </span>dplyr<span class="op">::</span><span class="kw">select</span>(GID,BLUP) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-75"><a href="#cb8-75"></a><span class="st">                        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test)) <span class="op">%$%</span><span class="st"> </span></span>
+<span id="cb8-76"><a href="#cb8-76"></a><span class="st">            </span><span class="kw">cor</span>(GEBV,BLUP, <span class="dt">use=</span><span class="st">&#39;complete.obs&#39;</span>) </span>
+<span id="cb8-77"><a href="#cb8-77"></a>    <span class="kw">return</span>(accuracy)</span>
+<span id="cb8-78"><a href="#cb8-78"></a>    }</span>
+<span id="cb8-79"><a href="#cb8-79"></a>    </span>
+<span id="cb8-80"><a href="#cb8-80"></a>    <span class="kw">require</span>(furrr)</span>
+<span id="cb8-81"><a href="#cb8-81"></a>    <span class="kw">options</span>(<span class="dt">mc.cores=</span>ncores)</span>
+<span id="cb8-82"><a href="#cb8-82"></a>    <span class="kw">plan</span>(multiprocess)</span>
+<span id="cb8-83"><a href="#cb8-83"></a>    crossval&lt;-crossval <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-84"><a href="#cb8-84"></a><span class="st">          </span><span class="kw">mutate</span>(<span class="dt">accuracy=</span><span class="kw">future_map2</span>(Test,Train,<span class="op">~</span><span class="kw">crossValidate</span>(<span class="dt">Test=</span>.x,<span class="dt">Train=</span>.y)))</span>
+<span id="cb8-85"><a href="#cb8-85"></a>    <span class="kw">saveRDS</span>(crossval,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>,</span>
+<span id="cb8-86"><a href="#cb8-86"></a>                                 <span class="st">&quot;CrossVal_&quot;</span>,Trait,<span class="st">&quot;_NRCRIonly_72819.rds&quot;</span>))</span>
+<span id="cb8-87"><a href="#cb8-87"></a>    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>() </span>
+<span id="cb8-88"><a href="#cb8-88"></a>    }</span></code></pre></div>
+<div id="cbsumm21-40" class="section level3">
+<h3>cbsumm21 (40)</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="st">      </span><span class="kw">slice</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">CVaccuracy=</span><span class="kw">pmap</span>(.,crossValidateFunc))</span></code></pre></div>
+</div>
+<div id="cbsu30-40" class="section level3">
+<h3>cbsu30 (40)</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="st">      </span><span class="kw">slice</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">CVaccuracy=</span><span class="kw">pmap</span>(.,crossValidateFunc))</span></code></pre></div>
+</div>
+</div>
+<div id="function-iita-augmented" class="section level2">
+<h2>Function: IITA augmented</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># nrTrainingData&lt;-blups$nrTrainingData[[1]]; </span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="co"># iiTrainingData&lt;-blups$iiTrainingData[[1]];</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="co"># seeds&lt;-blups$seeds[[1]]; nfolds&lt;-5; reps&lt;-5;</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>crossValidateFunc&lt;-<span class="cf">function</span>(Trait,nrTrainingData,iiTrainingData,seeds,<span class="dt">nfolds=</span><span class="dv">5</span>,<span class="dt">reps=</span><span class="dv">5</span>,<span class="dt">ncores=</span><span class="dv">30</span>,...){</span>
+<span id="cb11-5"><a href="#cb11-5"></a>      K&lt;-Kall</span>
+<span id="cb11-6"><a href="#cb11-6"></a>      trntstdata&lt;-nrTrainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="st">            </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;NRCRI&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="st">            </span><span class="kw">bind_rows</span>(iiTrainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="st">                            </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;IITA&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-10"><a href="#cb11-10"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K))</span>
+<span id="cb11-11"><a href="#cb11-11"></a>      K1&lt;-K[<span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID,</span>
+<span id="cb11-12"><a href="#cb11-12"></a>            <span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID]</span>
+<span id="cb11-13"><a href="#cb11-13"></a>      <span class="kw">rm</span>(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); <span class="kw">gc</span>()</span>
+<span id="cb11-14"><a href="#cb11-14"></a>      <span class="co"># seed&lt;-seeds[[1]]</span></span>
+<span id="cb11-15"><a href="#cb11-15"></a>      <span class="co"># Nfolds=nfolds</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a>      makeFolds&lt;-<span class="cf">function</span>(<span class="dt">Nfolds=</span>nfolds,seed){</span>
+<span id="cb11-17"><a href="#cb11-17"></a>            genotypes&lt;-<span class="kw">rownames</span>(K1)</span>
+<span id="cb11-18"><a href="#cb11-18"></a>            </span>
+<span id="cb11-19"><a href="#cb11-19"></a>            <span class="kw">set.seed</span>(seed)</span>
+<span id="cb11-20"><a href="#cb11-20"></a>            seed_per_group&lt;-<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>,<span class="dt">size =</span> <span class="dv">3</span>,<span class="dt">replace =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb11-21"><a href="#cb11-21"></a>      </span>
+<span id="cb11-22"><a href="#cb11-22"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">1</span>])</span>
+<span id="cb11-23"><a href="#cb11-23"></a>            FoldsThisRep_nrTP&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>nrTP],</span>
+<span id="cb11-24"><a href="#cb11-24"></a>                                       <span class="dt">Group=</span><span class="st">&quot;nrTP&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-25"><a href="#cb11-25"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-26"><a href="#cb11-26"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-27"><a href="#cb11-27"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-28"><a href="#cb11-28"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb11-29"><a href="#cb11-29"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">2</span>])</span>
+<span id="cb11-30"><a href="#cb11-30"></a>            FoldsThisRep_c1a&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1a],</span>
+<span id="cb11-31"><a href="#cb11-31"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1a&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-32"><a href="#cb11-32"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-33"><a href="#cb11-33"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-34"><a href="#cb11-34"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-35"><a href="#cb11-35"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb11-36"><a href="#cb11-36"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">3</span>])</span>
+<span id="cb11-37"><a href="#cb11-37"></a>            FoldsThisRep_c1b&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1b],</span>
+<span id="cb11-38"><a href="#cb11-38"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1b&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-39"><a href="#cb11-39"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-40"><a href="#cb11-40"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-41"><a href="#cb11-41"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-42"><a href="#cb11-42"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb11-43"><a href="#cb11-43"></a>           FoldsThisRep&lt;-<span class="kw">bind_rows</span>(FoldsThisRep_nrTP,FoldsThisRep_c1a) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-44"><a href="#cb11-44"></a><span class="st">                  </span><span class="kw">bind_rows</span>(FoldsThisRep_c1b) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb11-45"><a href="#cb11-45"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Test=</span><span class="kw">map</span>(Test,<span class="op">~</span>.<span class="op">$</span>CLONE),</span>
+<span id="cb11-46"><a href="#cb11-46"></a>                         <span class="dt">Train=</span><span class="kw">map</span>(Test,<span class="op">~</span>genotypes[<span class="op">!</span>genotypes <span class="op">%in%</span><span class="st"> </span>.]))</span>
+<span id="cb11-47"><a href="#cb11-47"></a>            <span class="kw">return</span>(FoldsThisRep) }</span>
+<span id="cb11-48"><a href="#cb11-48"></a>      </span>
+<span id="cb11-49"><a href="#cb11-49"></a>    crossval&lt;-<span class="kw">tibble</span>(<span class="dt">Rep=</span><span class="dv">1</span><span class="op">:</span>reps,<span class="dt">seed=</span><span class="kw">unlist</span>(seeds)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-50"><a href="#cb11-50"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">map2</span>(Rep,seed,<span class="op">~</span><span class="kw">makeFolds</span>(<span class="dt">Nfolds=</span>nfolds,<span class="dt">seed=</span>.y))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-51"><a href="#cb11-51"></a><span class="st">        </span><span class="kw">unnest</span>()</span>
+<span id="cb11-52"><a href="#cb11-52"></a>    <span class="co">#Test&lt;-crossval$Test[[1]]; Train&lt;-crossval$Train[[1]]</span></span>
+<span id="cb11-53"><a href="#cb11-53"></a>    crossValidate&lt;-<span class="cf">function</span>(Test,Train){ </span>
+<span id="cb11-54"><a href="#cb11-54"></a>      train&lt;-Train</span>
+<span id="cb11-55"><a href="#cb11-55"></a>      test&lt;-Test</span>
+<span id="cb11-56"><a href="#cb11-56"></a>      trainingdata&lt;-trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-57"><a href="#cb11-57"></a><span class="st">        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-58"><a href="#cb11-58"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">factor</span>(GID,<span class="dt">levels=</span><span class="kw">rownames</span>(K1)))</span>
+<span id="cb11-59"><a href="#cb11-59"></a>       </span>
+<span id="cb11-60"><a href="#cb11-60"></a>      <span class="kw">require</span>(sommer)</span>
+<span id="cb11-61"><a href="#cb11-61"></a>      proctime&lt;-<span class="kw">proc.time</span>()</span>
+<span id="cb11-62"><a href="#cb11-62"></a>      fit &lt;-<span class="st"> </span><span class="kw">mmer</span>(<span class="dt">fixed =</span> drgBLUP <span class="op">~</span><span class="dv">1</span>,</span>
+<span id="cb11-63"><a href="#cb11-63"></a>                  <span class="dt">random =</span> <span class="op">~</span><span class="kw">vs</span>(GID,<span class="dt">Gu=</span>K1),</span>
+<span id="cb11-64"><a href="#cb11-64"></a>                  <span class="dt">weights =</span> WT,</span>
+<span id="cb11-65"><a href="#cb11-65"></a>                  <span class="dt">data=</span>trainingdata) </span>
+<span id="cb11-66"><a href="#cb11-66"></a>      <span class="kw">proc.time</span>()<span class="op">-</span>proctime</span>
+<span id="cb11-67"><a href="#cb11-67"></a>      </span>
+<span id="cb11-68"><a href="#cb11-68"></a>      x&lt;-fit<span class="op">$</span>U<span class="op">$</span><span class="st">`</span><span class="dt">u:GID</span><span class="st">`</span><span class="op">$</span>drgBLUP </span>
+<span id="cb11-69"><a href="#cb11-69"></a>      gebvs&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span><span class="kw">names</span>(x),</span>
+<span id="cb11-70"><a href="#cb11-70"></a>                    <span class="dt">GEBV=</span><span class="kw">as.numeric</span>(x))</span>
+<span id="cb11-71"><a href="#cb11-71"></a>      </span>
+<span id="cb11-72"><a href="#cb11-72"></a>      accuracy&lt;-gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-73"><a href="#cb11-73"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-74"><a href="#cb11-74"></a><span class="st">            </span><span class="kw">left_join</span>(</span>
+<span id="cb11-75"><a href="#cb11-75"></a>                  trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-76"><a href="#cb11-76"></a><span class="st">                        </span><span class="kw">filter</span>(Dataset<span class="op">==</span><span class="st">&quot;NRCRI&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># only validate on NRCRI blups</span></span>
+<span id="cb11-77"><a href="#cb11-77"></a><span class="st">                        </span>dplyr<span class="op">::</span><span class="kw">select</span>(GID,BLUP) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-78"><a href="#cb11-78"></a><span class="st">                        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test)) <span class="op">%$%</span><span class="st"> </span></span>
+<span id="cb11-79"><a href="#cb11-79"></a><span class="st">            </span><span class="kw">cor</span>(GEBV,BLUP, <span class="dt">use=</span><span class="st">&#39;complete.obs&#39;</span>) </span>
+<span id="cb11-80"><a href="#cb11-80"></a>    <span class="kw">return</span>(accuracy)</span>
+<span id="cb11-81"><a href="#cb11-81"></a>    }</span>
+<span id="cb11-82"><a href="#cb11-82"></a>    </span>
+<span id="cb11-83"><a href="#cb11-83"></a>    <span class="kw">require</span>(furrr)</span>
+<span id="cb11-84"><a href="#cb11-84"></a>    <span class="kw">options</span>(<span class="dt">mc.cores=</span>ncores)</span>
+<span id="cb11-85"><a href="#cb11-85"></a>    <span class="kw">plan</span>(multiprocess)</span>
+<span id="cb11-86"><a href="#cb11-86"></a>    crossval&lt;-crossval <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-87"><a href="#cb11-87"></a><span class="st">          </span><span class="kw">mutate</span>(<span class="dt">accuracy=</span><span class="kw">future_map2</span>(Test,Train,<span class="op">~</span><span class="kw">crossValidate</span>(<span class="dt">Test=</span>.x,<span class="dt">Train=</span>.y)))</span>
+<span id="cb11-88"><a href="#cb11-88"></a>    <span class="kw">saveRDS</span>(crossval,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>,</span>
+<span id="cb11-89"><a href="#cb11-89"></a>                                 <span class="st">&quot;CrossVal_&quot;</span>,Trait,<span class="st">&quot;_IITAaugmented_72819.rds&quot;</span>))</span>
+<span id="cb11-90"><a href="#cb11-90"></a>    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>() </span>
+<span id="cb11-91"><a href="#cb11-91"></a>    }</span></code></pre></div>
+<div id="cbsumm21-40-1" class="section level3">
+<h3>cbsumm21 (40)</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="st">      </span><span class="kw">slice</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">CVaccuracy=</span><span class="kw">pmap</span>(.,crossValidateFunc))</span></code></pre></div>
+</div>
+<div id="cbsu30-40-1" class="section level3">
+<h3>cbsu30 (40)</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="st">      </span><span class="kw">slice</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">CVaccuracy=</span><span class="kw">pmap</span>(.,crossValidateFunc))</span></code></pre></div>
+</div>
+</div>
+<div id="plot-results" class="section level2">
+<h2>Plot Results</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>());<span class="kw">gc</span>()</span></code></pre></div>
+<pre><code>          used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)
+Ncells  618394 33.1    1263545 67.5         NA  1215095 64.9
+Vcells 1165896  8.9    8388608 64.0     102400  2380281 18.2</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(cowplot); </span>
+<span id="cb16-2"><a href="#cb16-2"></a>cv&lt;-<span class="kw">tibble</span>(<span class="dt">Files=</span><span class="kw">list.files</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">cvResults=</span><span class="kw">map</span>(Files,<span class="op">~</span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>,.))))</span>
+<span id="cb16-4"><a href="#cb16-4"></a>cv <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Files=</span><span class="kw">gsub</span>(<span class="st">&quot;CrossVal_&quot;</span>,<span class="st">&quot;&quot;</span>,Files),</span>
+<span id="cb16-6"><a href="#cb16-6"></a>             <span class="dt">Files=</span><span class="kw">gsub</span>(<span class="st">&quot;_72819.rds&quot;</span>,<span class="st">&quot;&quot;</span>,Files)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="st">      </span><span class="kw">separate</span>(Files,<span class="kw">c</span>(<span class="st">&quot;Trait&quot;</span>,<span class="st">&quot;Dataset&quot;</span>),<span class="st">&quot;_&quot;</span>)</span>
+<span id="cb16-8"><a href="#cb16-8"></a>cv <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="st">  </span><span class="kw">unnest</span>(cvResults)</span>
+<span id="cb16-10"><a href="#cb16-10"></a>cv <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb16-11"><a href="#cb16-11"></a><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Test,<span class="op">-</span>Train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-12"><a href="#cb16-12"></a><span class="st">  </span><span class="kw">unnest</span>(accuracy)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">library</span>(viridis)</span>
+<span id="cb17-2"><a href="#cb17-2"></a>cv <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Group=</span><span class="kw">factor</span>(Group,<span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;nrTP&quot;</span>,<span class="st">&quot;c1a&quot;</span>,<span class="st">&quot;c1b&quot;</span>)),</span>
+<span id="cb17-4"><a href="#cb17-4"></a>             <span class="dt">Dataset=</span><span class="kw">factor</span>(Dataset,<span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;NRCRIonly&quot;</span>,<span class="st">&quot;IITAaugmented&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>Trait,<span class="dt">y=</span>accuracy,<span class="dt">fill=</span>Dataset)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="st">      </span><span class="kw">geom_boxplot</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="st">      </span><span class="kw">facet_grid</span>(.<span class="op">~</span>Group,<span class="dt">space =</span> <span class="st">&#39;free&#39;</span>, <span class="dt">scales =</span> <span class="st">&#39;free_x&#39;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="st">      </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>,<span class="dt">color=</span><span class="st">&#39;darkred&#39;</span>,<span class="dt">size=</span><span class="fl">1.25</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-10"><a href="#cb17-10"></a><span class="st">      </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle=</span><span class="dv">90</span>)) <span class="op">+</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a><span class="st">      </span><span class="kw">scale_fill_viridis_d</span>()</span></code></pre></div>
+<p><img src="figure/CrossValidation.Rmd/unnamed-chunk-15-1.png" width="864" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="cross-validation-on-curated-data" class="section level1">
+<h1>Cross-validation on curated data</h1>
+<div id="prep.-data-for-cross-val" class="section level2">
+<h2>Prep. data for cross-val</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>()</span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); </span>
+<span id="cb18-3"><a href="#cb18-3"></a>blups&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds&quot;</span>)</span>
+<span id="cb18-4"><a href="#cb18-4"></a>K&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/workdir/marnin/NRCRI_2019GS/Kinship_IITA_TrainingPop_72619.rds&quot;</span>))</span>
+<span id="cb18-5"><a href="#cb18-5"></a>blups <span class="op">%&lt;&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="st">      </span><span class="kw">rename</span>(<span class="dt">trainingData=</span>blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">trainingData=</span><span class="kw">map</span>(trainingData,<span class="op">~</span><span class="kw">filter</span>(.,GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K))),)</span>
+<span id="cb18-8"><a href="#cb18-8"></a>tms13f&lt;-<span class="kw">rownames</span>(K) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;TMS13F|2013_&quot;</span>,.,<span class="dt">value =</span> T); <span class="kw">length</span>(tms13f) <span class="co"># 2395</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a>tms14f&lt;-<span class="kw">rownames</span>(K) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;TMS14F&quot;</span>,.,<span class="dt">value =</span> T); <span class="kw">length</span>(tms14f) <span class="co"># 2171</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>tms15f&lt;-<span class="kw">rownames</span>(K) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;TMS15F&quot;</span>,.,<span class="dt">value =</span> T); <span class="kw">length</span>(tms15f) <span class="co"># 835</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a>gg&lt;-<span class="kw">setdiff</span>(<span class="kw">rownames</span>(K),<span class="kw">c</span>(tms13f,tms14f,tms15f)); <span class="kw">length</span>(gg) <span class="co"># 1228 (not strictly gg)</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a></span>
+<span id="cb18-13"><a href="#cb18-13"></a>blups <span class="op">%&lt;&gt;%</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">seed_of_seeds=</span><span class="dv">1</span><span class="op">:</span><span class="kw">n</span>(),</span>
+<span id="cb18-15"><a href="#cb18-15"></a>           <span class="dt">seeds=</span><span class="kw">map</span>(seed_of_seeds,<span class="cf">function</span>(seed_of_seeds,<span class="dt">reps=</span><span class="dv">5</span>){ </span>
+<span id="cb18-16"><a href="#cb18-16"></a>               <span class="kw">set.seed</span>(seed_of_seeds); </span>
+<span id="cb18-17"><a href="#cb18-17"></a>               outSeeds&lt;-<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>,<span class="dt">size =</span> reps,<span class="dt">replace =</span> F); </span>
+<span id="cb18-18"><a href="#cb18-18"></a>               <span class="kw">return</span>(outSeeds) }))</span>
+<span id="cb18-19"><a href="#cb18-19"></a>blups <span class="op">%&lt;&gt;%</span></span>
+<span id="cb18-20"><a href="#cb18-20"></a><span class="st">      </span><span class="kw">select</span>(<span class="op">-</span>varcomp); <span class="kw">gc</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>()</span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); </span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="kw">load</span>(<span class="dt">file=</span><span class="st">&quot;/workdir/marnin/NRCRI_2019GS/Kinships_NRCRI_ForCrossVal_72819.Rdata&quot;</span>)</span>
+<span id="cb19-4"><a href="#cb19-4"></a>asModelsFit_nr&lt;-<span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds&quot;</span>)</span>
+<span id="cb19-5"><a href="#cb19-5"></a>asModelsFit_nr <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="st">      </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
+<span id="cb19-9"><a href="#cb19-9"></a>            asModelsFit_nr <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="st">                  </span><span class="kw">unnest</span>(blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-12"><a href="#cb19-12"></a><span class="st">                  </span><span class="kw">select</span>(GID) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="st">                  </span>distinct <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="st">                  </span><span class="kw">left_join</span>(<span class="kw">tibble</span>(<span class="dt">FullSampleName=</span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,<span class="kw">rownames</span>(Kall),<span class="dt">ignore.case =</span> T,<span class="dt">value =</span> T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="st">                                  </span><span class="kw">separate</span>(FullSampleName,<span class="kw">c</span>(<span class="st">&quot;GID&quot;</span>,<span class="st">&quot;GBS_ID&quot;</span>),<span class="st">&quot;:&quot;</span>,<span class="dt">extra =</span> <span class="st">&#39;merge&#39;</span>,<span class="dt">remove =</span> F) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-16"><a href="#cb19-16"></a><span class="st">                                  </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">paste0</span>(<span class="st">&quot;NR16&quot;</span>,GID)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-17"><a href="#cb19-17"></a><span class="st">                                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>GBS_ID)) <span class="op">%&gt;%</span></span>
+<span id="cb19-18"><a href="#cb19-18"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">FullSampleName=</span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(FullSampleName),GID,FullSampleName)))</span>
+<span id="cb19-19"><a href="#cb19-19"></a>asModelsFit_nr <span class="op">%&lt;&gt;%</span><span class="st"> </span></span>
+<span id="cb19-20"><a href="#cb19-20"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">GID=</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-21"><a href="#cb19-21"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>FullSampleName) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-22"><a href="#cb19-22"></a><span class="st">      </span><span class="kw">group_by</span>(Trait) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-23"><a href="#cb19-23"></a><span class="st">      </span><span class="kw">nest</span>(<span class="dt">.key =</span> <span class="st">&quot;blups&quot;</span>)</span>
+<span id="cb19-24"><a href="#cb19-24"></a></span>
+<span id="cb19-25"><a href="#cb19-25"></a>blups&lt;-asModelsFit_nr <span class="op">%&gt;%</span><span class="st">      </span></span>
+<span id="cb19-26"><a href="#cb19-26"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">blups=</span><span class="kw">map</span>(blups,<span class="op">~</span><span class="kw">filter</span>(.,GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(Kall)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-27"><a href="#cb19-27"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-28"><a href="#cb19-28"></a><span class="st">      </span><span class="kw">rename</span>(<span class="dt">nrTrainingData=</span>blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-29"><a href="#cb19-29"></a><span class="st">      </span><span class="kw">left_join</span>(</span>
+<span id="cb19-30"><a href="#cb19-30"></a>            <span class="kw">readRDS</span>(<span class="dt">file=</span><span class="st">&quot;data/iita_blupsForCrossVal_outliersRemoved_73019.rds&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-31"><a href="#cb19-31"></a><span class="st">                  </span><span class="kw">rename</span>(<span class="dt">trainingData=</span>blups) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-32"><a href="#cb19-32"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">trainingData=</span><span class="kw">map</span>(trainingData,<span class="op">~</span><span class="kw">filter</span>(.,GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(Kall)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-33"><a href="#cb19-33"></a><span class="st">                  </span><span class="kw">filter</span>(Trait <span class="op">%in%</span><span class="st"> </span>asModelsFit_nr<span class="op">$</span>Trait) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-34"><a href="#cb19-34"></a><span class="st">                  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Trait,trainingData) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-35"><a href="#cb19-35"></a><span class="st">                  </span><span class="kw">rename</span>(<span class="dt">iiTrainingData=</span>trainingData))</span>
+<span id="cb19-36"><a href="#cb19-36"></a></span>
+<span id="cb19-37"><a href="#cb19-37"></a>c1a&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;^F&quot;</span>,.,<span class="dt">value =</span> T); <span class="kw">length</span>(c1a) <span class="co"># 899</span></span>
+<span id="cb19-38"><a href="#cb19-38"></a>c1b&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;C1b&quot;</span>,.,<span class="dt">value =</span> T,<span class="dt">ignore.case =</span> T); <span class="kw">length</span>(c1b) <span class="co"># 629</span></span>
+<span id="cb19-39"><a href="#cb19-39"></a>c2&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;C2a|C2b&quot;</span>,.,<span class="dt">value =</span> T,<span class="dt">ignore.case =</span> T); <span class="kw">length</span>(c2) <span class="co"># 57</span></span>
+<span id="cb19-40"><a href="#cb19-40"></a>nrTP&lt;-<span class="kw">rownames</span>(Knr) <span class="op">%&gt;%</span><span class="st"> </span>.[<span class="op">!</span>. <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(c1a,c1b,c2)]; <span class="kw">length</span>(nrTP); <span class="co"># 914</span></span>
+<span id="cb19-41"><a href="#cb19-41"></a>ggEtc&lt;-<span class="kw">rownames</span>(Kall) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-42"><a href="#cb19-42"></a><span class="st">      </span><span class="kw">grep</span>(<span class="st">&quot;2013_|TMS13F|TMS14F|TMS15F&quot;</span>,.,<span class="dt">value =</span> T,<span class="dt">invert =</span> T) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-43"><a href="#cb19-43"></a><span class="st">      </span>.[<span class="op">!</span>. <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(nrTP,c1a,c1b,c2)]; <span class="kw">length</span>(ggEtc) <span class="co"># 861</span></span>
+<span id="cb19-44"><a href="#cb19-44"></a>allIITA&lt;-<span class="kw">rownames</span>(Kall) <span class="op">%&gt;%</span><span class="st"> </span>.[<span class="op">!</span>. <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(nrTP,c1a,c1b,c2)]; <span class="kw">length</span>(allIITA) <span class="co"># 6262</span></span>
+<span id="cb19-45"><a href="#cb19-45"></a></span>
+<span id="cb19-46"><a href="#cb19-46"></a>blups <span class="op">%&lt;&gt;%</span></span>
+<span id="cb19-47"><a href="#cb19-47"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">seed_of_seeds=</span><span class="dv">1</span><span class="op">:</span><span class="kw">n</span>(),</span>
+<span id="cb19-48"><a href="#cb19-48"></a>           <span class="dt">seeds=</span><span class="kw">map</span>(seed_of_seeds,<span class="cf">function</span>(seed_of_seeds,<span class="dt">reps=</span><span class="dv">5</span>){ </span>
+<span id="cb19-49"><a href="#cb19-49"></a>               <span class="kw">set.seed</span>(seed_of_seeds); </span>
+<span id="cb19-50"><a href="#cb19-50"></a>               outSeeds&lt;-<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>,<span class="dt">size =</span> reps,<span class="dt">replace =</span> F); </span>
+<span id="cb19-51"><a href="#cb19-51"></a>               <span class="kw">return</span>(outSeeds) }))</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">mkdir</span> /workdir/NRCRI_2019GS/CrossVal_73019</span></code></pre></div>
+</div>
+<div id="nrcri-alone" class="section level2">
+<h2>NRCRI alone</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># nrTrainingData&lt;-blups$nrTrainingData[[1]]; </span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="co"># iiTrainingData&lt;-blups$iiTrainingData[[1]];</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="co"># seeds&lt;-blups$seeds[[1]]; nfolds&lt;-5; reps&lt;-5;</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a></span>
+<span id="cb21-5"><a href="#cb21-5"></a>crossValidateFunc&lt;-<span class="cf">function</span>(Trait,nrTrainingData,iiTrainingData,seeds,<span class="dt">nfolds=</span><span class="dv">5</span>,<span class="dt">reps=</span><span class="dv">5</span>,<span class="dt">ncores=</span><span class="dv">100</span>,...){</span>
+<span id="cb21-6"><a href="#cb21-6"></a>      K&lt;-Knr</span>
+<span id="cb21-7"><a href="#cb21-7"></a>      trntstdata&lt;-nrTrainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K))</span>
+<span id="cb21-9"><a href="#cb21-9"></a>      K1&lt;-K[<span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID,</span>
+<span id="cb21-10"><a href="#cb21-10"></a>            <span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID]</span>
+<span id="cb21-11"><a href="#cb21-11"></a>      <span class="kw">rm</span>(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); <span class="kw">gc</span>()</span>
+<span id="cb21-12"><a href="#cb21-12"></a>      <span class="co"># seed&lt;-seeds[[1]]</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a>      <span class="co"># Nfolds=nfolds</span></span>
+<span id="cb21-14"><a href="#cb21-14"></a>      makeFolds&lt;-<span class="cf">function</span>(<span class="dt">Nfolds=</span>nfolds,seed){</span>
+<span id="cb21-15"><a href="#cb21-15"></a>            genotypes&lt;-<span class="kw">rownames</span>(K1)</span>
+<span id="cb21-16"><a href="#cb21-16"></a>            </span>
+<span id="cb21-17"><a href="#cb21-17"></a>            <span class="kw">set.seed</span>(seed)</span>
+<span id="cb21-18"><a href="#cb21-18"></a>            seed_per_group&lt;-<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>,<span class="dt">size =</span> <span class="dv">3</span>,<span class="dt">replace =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb21-19"><a href="#cb21-19"></a>      </span>
+<span id="cb21-20"><a href="#cb21-20"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">1</span>])</span>
+<span id="cb21-21"><a href="#cb21-21"></a>            FoldsThisRep_nrTP&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>nrTP],</span>
+<span id="cb21-22"><a href="#cb21-22"></a>                                       <span class="dt">Group=</span><span class="st">&quot;nrTP&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-23"><a href="#cb21-23"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-24"><a href="#cb21-24"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-25"><a href="#cb21-25"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-26"><a href="#cb21-26"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb21-27"><a href="#cb21-27"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">2</span>])</span>
+<span id="cb21-28"><a href="#cb21-28"></a>            FoldsThisRep_c1a&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1a],</span>
+<span id="cb21-29"><a href="#cb21-29"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1a&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-30"><a href="#cb21-30"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-31"><a href="#cb21-31"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-32"><a href="#cb21-32"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-33"><a href="#cb21-33"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb21-34"><a href="#cb21-34"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">3</span>])</span>
+<span id="cb21-35"><a href="#cb21-35"></a>            FoldsThisRep_c1b&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1b],</span>
+<span id="cb21-36"><a href="#cb21-36"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1b&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-37"><a href="#cb21-37"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-38"><a href="#cb21-38"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-39"><a href="#cb21-39"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-40"><a href="#cb21-40"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb21-41"><a href="#cb21-41"></a>           FoldsThisRep&lt;-<span class="kw">bind_rows</span>(FoldsThisRep_nrTP,FoldsThisRep_c1a) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-42"><a href="#cb21-42"></a><span class="st">                  </span><span class="kw">bind_rows</span>(FoldsThisRep_c1b) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb21-43"><a href="#cb21-43"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Test=</span><span class="kw">map</span>(Test,<span class="op">~</span>.<span class="op">$</span>CLONE),</span>
+<span id="cb21-44"><a href="#cb21-44"></a>                         <span class="dt">Train=</span><span class="kw">map</span>(Test,<span class="op">~</span>genotypes[<span class="op">!</span>genotypes <span class="op">%in%</span><span class="st"> </span>.]))</span>
+<span id="cb21-45"><a href="#cb21-45"></a>            <span class="kw">return</span>(FoldsThisRep) }</span>
+<span id="cb21-46"><a href="#cb21-46"></a>      </span>
+<span id="cb21-47"><a href="#cb21-47"></a>    crossval&lt;-<span class="kw">tibble</span>(<span class="dt">Rep=</span><span class="dv">1</span><span class="op">:</span>reps,<span class="dt">seed=</span><span class="kw">unlist</span>(seeds)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-48"><a href="#cb21-48"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">map2</span>(Rep,seed,<span class="op">~</span><span class="kw">makeFolds</span>(<span class="dt">Nfolds=</span>nfolds,<span class="dt">seed=</span>.y))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-49"><a href="#cb21-49"></a><span class="st">        </span><span class="kw">unnest</span>()</span>
+<span id="cb21-50"><a href="#cb21-50"></a></span>
+<span id="cb21-51"><a href="#cb21-51"></a>    <span class="co">#Test&lt;-crossval$Test[[1]]; Train&lt;-crossval$Train[[1]]</span></span>
+<span id="cb21-52"><a href="#cb21-52"></a>    crossValidate&lt;-<span class="cf">function</span>(Test,Train){ </span>
+<span id="cb21-53"><a href="#cb21-53"></a>      train&lt;-Train</span>
+<span id="cb21-54"><a href="#cb21-54"></a>      test&lt;-Test</span>
+<span id="cb21-55"><a href="#cb21-55"></a>      trainingdata&lt;-trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-56"><a href="#cb21-56"></a><span class="st">        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-57"><a href="#cb21-57"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">factor</span>(GID,<span class="dt">levels=</span><span class="kw">rownames</span>(K1)))</span>
+<span id="cb21-58"><a href="#cb21-58"></a>       </span>
+<span id="cb21-59"><a href="#cb21-59"></a>      <span class="kw">require</span>(sommer)</span>
+<span id="cb21-60"><a href="#cb21-60"></a>      proctime&lt;-<span class="kw">proc.time</span>()</span>
+<span id="cb21-61"><a href="#cb21-61"></a>      fit &lt;-<span class="st"> </span><span class="kw">mmer</span>(<span class="dt">fixed =</span> drgBLUP <span class="op">~</span><span class="dv">1</span>,</span>
+<span id="cb21-62"><a href="#cb21-62"></a>                  <span class="dt">random =</span> <span class="op">~</span><span class="kw">vs</span>(GID,<span class="dt">Gu=</span>K1),</span>
+<span id="cb21-63"><a href="#cb21-63"></a>                  <span class="dt">weights =</span> WT,</span>
+<span id="cb21-64"><a href="#cb21-64"></a>                  <span class="dt">data=</span>trainingdata) </span>
+<span id="cb21-65"><a href="#cb21-65"></a>      <span class="kw">proc.time</span>()<span class="op">-</span>proctime</span>
+<span id="cb21-66"><a href="#cb21-66"></a>      </span>
+<span id="cb21-67"><a href="#cb21-67"></a>      x&lt;-fit<span class="op">$</span>U<span class="op">$</span><span class="st">`</span><span class="dt">u:GID</span><span class="st">`</span><span class="op">$</span>drgBLUP </span>
+<span id="cb21-68"><a href="#cb21-68"></a>      gebvs&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span><span class="kw">names</span>(x),</span>
+<span id="cb21-69"><a href="#cb21-69"></a>                    <span class="dt">GEBV=</span><span class="kw">as.numeric</span>(x))</span>
+<span id="cb21-70"><a href="#cb21-70"></a>      </span>
+<span id="cb21-71"><a href="#cb21-71"></a>      accuracy&lt;-gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-72"><a href="#cb21-72"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-73"><a href="#cb21-73"></a><span class="st">            </span><span class="kw">left_join</span>(</span>
+<span id="cb21-74"><a href="#cb21-74"></a>                  trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-75"><a href="#cb21-75"></a><span class="st">                        </span>dplyr<span class="op">::</span><span class="kw">select</span>(GID,BLUP) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-76"><a href="#cb21-76"></a><span class="st">                        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test)) <span class="op">%$%</span><span class="st"> </span></span>
+<span id="cb21-77"><a href="#cb21-77"></a><span class="st">            </span><span class="kw">cor</span>(GEBV,BLUP, <span class="dt">use=</span><span class="st">&#39;complete.obs&#39;</span>) </span>
+<span id="cb21-78"><a href="#cb21-78"></a>    <span class="kw">return</span>(accuracy)</span>
+<span id="cb21-79"><a href="#cb21-79"></a>    }</span>
+<span id="cb21-80"><a href="#cb21-80"></a>    </span>
+<span id="cb21-81"><a href="#cb21-81"></a>    <span class="kw">require</span>(furrr)</span>
+<span id="cb21-82"><a href="#cb21-82"></a>    <span class="kw">options</span>(<span class="dt">mc.cores=</span>ncores)</span>
+<span id="cb21-83"><a href="#cb21-83"></a>    <span class="kw">plan</span>(multiprocess)</span>
+<span id="cb21-84"><a href="#cb21-84"></a>    crossval&lt;-crossval <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-85"><a href="#cb21-85"></a><span class="st">          </span><span class="kw">mutate</span>(<span class="dt">accuracy=</span><span class="kw">future_map2</span>(Test,Train,<span class="op">~</span><span class="kw">crossValidate</span>(<span class="dt">Test=</span>.x,<span class="dt">Train=</span>.y)))</span>
+<span id="cb21-86"><a href="#cb21-86"></a>    <span class="kw">saveRDS</span>(crossval,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;output/CrossVal_73019/&quot;</span>,</span>
+<span id="cb21-87"><a href="#cb21-87"></a>                                 <span class="st">&quot;CrossVal_&quot;</span>,Trait,<span class="st">&quot;_NRCRIonly_OutliersRemoved_73019.rds&quot;</span>))</span>
+<span id="cb21-88"><a href="#cb21-88"></a>    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>() </span>
+<span id="cb21-89"><a href="#cb21-89"></a>    }</span></code></pre></div>
+<div id="cbsulm16-112" class="section level3">
+<h3>cbsulm16 (112)</h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">CVaccuracy=</span><span class="kw">pmap</span>(.,crossValidateFunc))</span></code></pre></div>
+</div>
+</div>
+<div id="iita-augmented" class="section level2">
+<h2>IITA augmented</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="co"># nrTrainingData&lt;-blups$nrTrainingData[[1]]; </span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="co"># iiTrainingData&lt;-blups$iiTrainingData[[1]];</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="co"># seeds&lt;-blups$seeds[[1]]; nfolds&lt;-5; reps&lt;-5;</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a>crossValidateFunc&lt;-<span class="cf">function</span>(Trait,nrTrainingData,iiTrainingData,seeds,<span class="dt">nfolds=</span><span class="dv">5</span>,<span class="dt">reps=</span><span class="dv">5</span>,<span class="dt">ncores=</span><span class="dv">100</span>,...){</span>
+<span id="cb23-5"><a href="#cb23-5"></a>      K&lt;-Kall</span>
+<span id="cb23-6"><a href="#cb23-6"></a>      trntstdata&lt;-nrTrainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="st">            </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;NRCRI&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="st">            </span><span class="kw">bind_rows</span>(iiTrainingData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-9"><a href="#cb23-9"></a><span class="st">                            </span><span class="kw">mutate</span>(<span class="dt">Dataset=</span><span class="st">&quot;IITA&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(K))</span>
+<span id="cb23-11"><a href="#cb23-11"></a>      K1&lt;-K[<span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID,</span>
+<span id="cb23-12"><a href="#cb23-12"></a>            <span class="kw">rownames</span>(K) <span class="op">%in%</span><span class="st"> </span>trntstdata<span class="op">$</span>GID]</span>
+<span id="cb23-13"><a href="#cb23-13"></a>      <span class="kw">rm</span>(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); <span class="kw">gc</span>()</span>
+<span id="cb23-14"><a href="#cb23-14"></a>      <span class="co"># seed&lt;-seeds[[1]]</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a>      <span class="co"># Nfolds=nfolds</span></span>
+<span id="cb23-16"><a href="#cb23-16"></a>      makeFolds&lt;-<span class="cf">function</span>(<span class="dt">Nfolds=</span>nfolds,seed){</span>
+<span id="cb23-17"><a href="#cb23-17"></a>            genotypes&lt;-<span class="kw">rownames</span>(K1)</span>
+<span id="cb23-18"><a href="#cb23-18"></a>            </span>
+<span id="cb23-19"><a href="#cb23-19"></a>            <span class="kw">set.seed</span>(seed)</span>
+<span id="cb23-20"><a href="#cb23-20"></a>            seed_per_group&lt;-<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>,<span class="dt">size =</span> <span class="dv">3</span>,<span class="dt">replace =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb23-21"><a href="#cb23-21"></a>      </span>
+<span id="cb23-22"><a href="#cb23-22"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">1</span>])</span>
+<span id="cb23-23"><a href="#cb23-23"></a>            FoldsThisRep_nrTP&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>nrTP],</span>
+<span id="cb23-24"><a href="#cb23-24"></a>                                       <span class="dt">Group=</span><span class="st">&quot;nrTP&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-25"><a href="#cb23-25"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-26"><a href="#cb23-26"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-27"><a href="#cb23-27"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-28"><a href="#cb23-28"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb23-29"><a href="#cb23-29"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">2</span>])</span>
+<span id="cb23-30"><a href="#cb23-30"></a>            FoldsThisRep_c1a&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1a],</span>
+<span id="cb23-31"><a href="#cb23-31"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1a&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-32"><a href="#cb23-32"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-33"><a href="#cb23-33"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-34"><a href="#cb23-34"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-35"><a href="#cb23-35"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb23-36"><a href="#cb23-36"></a>            <span class="kw">set.seed</span>(seed_per_group[<span class="dv">3</span>])</span>
+<span id="cb23-37"><a href="#cb23-37"></a>            FoldsThisRep_c1b&lt;-<span class="kw">tibble</span>(<span class="dt">CLONE=</span>genotypes[genotypes <span class="op">%in%</span><span class="st"> </span>c1b],</span>
+<span id="cb23-38"><a href="#cb23-38"></a>                                       <span class="dt">Group=</span><span class="st">&quot;c1b&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-39"><a href="#cb23-39"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>Nfolds,<span class="kw">nrow</span>(.),<span class="dt">replace=</span>T)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-40"><a href="#cb23-40"></a><span class="st">                  </span><span class="kw">arrange</span>(Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-41"><a href="#cb23-41"></a><span class="st">                  </span><span class="kw">group_by</span>(Group,Folds) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-42"><a href="#cb23-42"></a><span class="st">                  </span><span class="kw">nest</span>(<span class="dt">.key =</span> Test)</span>
+<span id="cb23-43"><a href="#cb23-43"></a>           FoldsThisRep&lt;-<span class="kw">bind_rows</span>(FoldsThisRep_nrTP,FoldsThisRep_c1a) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-44"><a href="#cb23-44"></a><span class="st">                  </span><span class="kw">bind_rows</span>(FoldsThisRep_c1b) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb23-45"><a href="#cb23-45"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Test=</span><span class="kw">map</span>(Test,<span class="op">~</span>.<span class="op">$</span>CLONE),</span>
+<span id="cb23-46"><a href="#cb23-46"></a>                         <span class="dt">Train=</span><span class="kw">map</span>(Test,<span class="op">~</span>genotypes[<span class="op">!</span>genotypes <span class="op">%in%</span><span class="st"> </span>.]))</span>
+<span id="cb23-47"><a href="#cb23-47"></a>            <span class="kw">return</span>(FoldsThisRep) }</span>
+<span id="cb23-48"><a href="#cb23-48"></a>      </span>
+<span id="cb23-49"><a href="#cb23-49"></a>      crossval&lt;-<span class="kw">tibble</span>(<span class="dt">Rep=</span><span class="dv">1</span><span class="op">:</span>reps,<span class="dt">seed=</span><span class="kw">unlist</span>(seeds)[<span class="dv">1</span><span class="op">:</span>reps]) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-50"><a href="#cb23-50"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">Folds=</span><span class="kw">map2</span>(Rep,seed,<span class="op">~</span><span class="kw">makeFolds</span>(<span class="dt">Nfolds=</span>nfolds,<span class="dt">seed=</span>.y))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-51"><a href="#cb23-51"></a><span class="st">        </span><span class="kw">unnest</span>()</span>
+<span id="cb23-52"><a href="#cb23-52"></a>    <span class="co">#Test&lt;-crossval$Test[[1]]; Train&lt;-crossval$Train[[1]]</span></span>
+<span id="cb23-53"><a href="#cb23-53"></a>    crossValidate&lt;-<span class="cf">function</span>(Test,Train){ </span>
+<span id="cb23-54"><a href="#cb23-54"></a>      train&lt;-Train</span>
+<span id="cb23-55"><a href="#cb23-55"></a>      test&lt;-Test</span>
+<span id="cb23-56"><a href="#cb23-56"></a>      trainingdata&lt;-trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-57"><a href="#cb23-57"></a><span class="st">        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-58"><a href="#cb23-58"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">GID=</span><span class="kw">factor</span>(GID,<span class="dt">levels=</span><span class="kw">rownames</span>(K1)))</span>
+<span id="cb23-59"><a href="#cb23-59"></a>       </span>
+<span id="cb23-60"><a href="#cb23-60"></a>      <span class="kw">require</span>(sommer)</span>
+<span id="cb23-61"><a href="#cb23-61"></a>      proctime&lt;-<span class="kw">proc.time</span>()</span>
+<span id="cb23-62"><a href="#cb23-62"></a>      fit &lt;-<span class="st"> </span><span class="kw">mmer</span>(<span class="dt">fixed =</span> drgBLUP <span class="op">~</span><span class="dv">1</span>,</span>
+<span id="cb23-63"><a href="#cb23-63"></a>                  <span class="dt">random =</span> <span class="op">~</span><span class="kw">vs</span>(GID,<span class="dt">Gu=</span>K1),</span>
+<span id="cb23-64"><a href="#cb23-64"></a>                  <span class="dt">weights =</span> WT,</span>
+<span id="cb23-65"><a href="#cb23-65"></a>                  <span class="dt">data=</span>trainingdata) </span>
+<span id="cb23-66"><a href="#cb23-66"></a>      <span class="kw">proc.time</span>()<span class="op">-</span>proctime</span>
+<span id="cb23-67"><a href="#cb23-67"></a>      </span>
+<span id="cb23-68"><a href="#cb23-68"></a>      x&lt;-fit<span class="op">$</span>U<span class="op">$</span><span class="st">`</span><span class="dt">u:GID</span><span class="st">`</span><span class="op">$</span>drgBLUP </span>
+<span id="cb23-69"><a href="#cb23-69"></a>      gebvs&lt;-<span class="kw">tibble</span>(<span class="dt">GID=</span><span class="kw">names</span>(x),</span>
+<span id="cb23-70"><a href="#cb23-70"></a>                    <span class="dt">GEBV=</span><span class="kw">as.numeric</span>(x))</span>
+<span id="cb23-71"><a href="#cb23-71"></a>      </span>
+<span id="cb23-72"><a href="#cb23-72"></a>      accuracy&lt;-gebvs <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-73"><a href="#cb23-73"></a><span class="st">            </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-74"><a href="#cb23-74"></a><span class="st">            </span><span class="kw">left_join</span>(</span>
+<span id="cb23-75"><a href="#cb23-75"></a>                  trntstdata <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-76"><a href="#cb23-76"></a><span class="st">                        </span><span class="kw">filter</span>(Dataset<span class="op">==</span><span class="st">&quot;NRCRI&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># only validate on NRCRI blups</span></span>
+<span id="cb23-77"><a href="#cb23-77"></a><span class="st">                        </span>dplyr<span class="op">::</span><span class="kw">select</span>(GID,BLUP) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-78"><a href="#cb23-78"></a><span class="st">                        </span><span class="kw">filter</span>(GID <span class="op">%in%</span><span class="st"> </span>test)) <span class="op">%$%</span><span class="st"> </span></span>
+<span id="cb23-79"><a href="#cb23-79"></a><span class="st">            </span><span class="kw">cor</span>(GEBV,BLUP, <span class="dt">use=</span><span class="st">&#39;complete.obs&#39;</span>) </span>
+<span id="cb23-80"><a href="#cb23-80"></a>    <span class="kw">return</span>(accuracy)</span>
+<span id="cb23-81"><a href="#cb23-81"></a>    }</span>
+<span id="cb23-82"><a href="#cb23-82"></a>    </span>
+<span id="cb23-83"><a href="#cb23-83"></a>    <span class="kw">require</span>(furrr)</span>
+<span id="cb23-84"><a href="#cb23-84"></a>    <span class="kw">options</span>(<span class="dt">mc.cores=</span>ncores)</span>
+<span id="cb23-85"><a href="#cb23-85"></a>    <span class="kw">plan</span>(multiprocess)</span>
+<span id="cb23-86"><a href="#cb23-86"></a>    crossval&lt;-crossval <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-87"><a href="#cb23-87"></a><span class="st">          </span><span class="kw">mutate</span>(<span class="dt">accuracy=</span><span class="kw">future_map2</span>(Test,Train,<span class="op">~</span><span class="kw">crossValidate</span>(<span class="dt">Test=</span>.x,<span class="dt">Train=</span>.y)))</span>
+<span id="cb23-88"><a href="#cb23-88"></a>    <span class="kw">saveRDS</span>(crossval,<span class="dt">file=</span><span class="kw">paste0</span>(<span class="st">&quot;/output/CrossVal_73019/&quot;</span>,</span>
+<span id="cb23-89"><a href="#cb23-89"></a>                                 <span class="st">&quot;CrossVal_&quot;</span>,Trait,<span class="st">&quot;_IITAaugmented_OutliersRemoved_73019.rds&quot;</span>))</span>
+<span id="cb23-90"><a href="#cb23-90"></a>    <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>()); <span class="kw">gc</span>() </span>
+<span id="cb23-91"><a href="#cb23-91"></a>    }</span></code></pre></div>
+<div id="cbsulm16-112-1" class="section level3">
+<h3>cbsulm16 (112)</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>blups <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">CVaccuracy=</span><span class="kw">pmap</span>(.,crossValidateFunc))</span></code></pre></div>
+</div>
+</div>
+<div id="plot-results-1" class="section level2">
+<h2>Plot Results</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>());<span class="kw">gc</span>()</span></code></pre></div>
+<pre><code>          used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)
+Ncells 1102551 58.9    1971955 105.4         NA  1971955 105.4
+Vcells 1956541 15.0    9709522  74.1     102400 12136517  92.6</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(cowplot); </span>
+<span id="cb27-2"><a href="#cb27-2"></a>cvNoOutliers&lt;-<span class="kw">tibble</span>(<span class="dt">Files=</span><span class="kw">list.files</span>(<span class="st">&quot;output/CrossVal_73019/&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;CrossVal_&quot;</span>,<span class="st">&quot;&quot;</span>,Files),</span>
+<span id="cb27-4"><a href="#cb27-4"></a>                         <span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;_OutliersRemoved_73019.rds&quot;</span>,<span class="st">&quot;&quot;</span>,Trait),</span>
+<span id="cb27-5"><a href="#cb27-5"></a>                         <span class="dt">Curation=</span><span class="st">&quot;OutliersRemoved&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-6"><a href="#cb27-6"></a><span class="st">      </span><span class="kw">separate</span>(Trait,<span class="kw">c</span>(<span class="st">&quot;Trait&quot;</span>,<span class="st">&quot;Dataset&quot;</span>),<span class="st">&quot;_&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-7"><a href="#cb27-7"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">cvResults=</span><span class="kw">map</span>(Files,<span class="op">~</span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(<span class="st">&quot;output/CrossVal_73019/&quot;</span>,.)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-8"><a href="#cb27-8"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Files)</span>
+<span id="cb27-9"><a href="#cb27-9"></a></span>
+<span id="cb27-10"><a href="#cb27-10"></a></span>
+<span id="cb27-11"><a href="#cb27-11"></a>cvWithOutliers&lt;-<span class="kw">tibble</span>(<span class="dt">Files=</span><span class="kw">list.files</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-12"><a href="#cb27-12"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;CrossVal_&quot;</span>,<span class="st">&quot;&quot;</span>,Files),</span>
+<span id="cb27-13"><a href="#cb27-13"></a>             <span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;_72819.rds&quot;</span>,<span class="st">&quot;&quot;</span>,Trait),</span>
+<span id="cb27-14"><a href="#cb27-14"></a>             <span class="dt">Curation=</span><span class="st">&quot;NoOutlierRemoval&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-15"><a href="#cb27-15"></a><span class="st">      </span><span class="kw">separate</span>(Trait,<span class="kw">c</span>(<span class="st">&quot;Trait&quot;</span>,<span class="st">&quot;Dataset&quot;</span>),<span class="st">&quot;_&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-16"><a href="#cb27-16"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">cvResults=</span><span class="kw">map</span>(Files,<span class="op">~</span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>,.)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-17"><a href="#cb27-17"></a><span class="st">      </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Files)</span>
+<span id="cb27-18"><a href="#cb27-18"></a>cv&lt;-<span class="kw">bind_rows</span>(cvNoOutliers,</span>
+<span id="cb27-19"><a href="#cb27-19"></a>              cvWithOutliers)</span>
+<span id="cb27-20"><a href="#cb27-20"></a></span>
+<span id="cb27-21"><a href="#cb27-21"></a>cv <span class="op">%&lt;&gt;%</span><span class="st">  </span></span>
+<span id="cb27-22"><a href="#cb27-22"></a><span class="st">  </span><span class="kw">unnest</span>(cvResults) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-23"><a href="#cb27-23"></a><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Test,<span class="op">-</span>Train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-24"><a href="#cb27-24"></a><span class="st">  </span><span class="kw">unnest</span>(accuracy)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">library</span>(viridis)</span>
+<span id="cb28-2"><a href="#cb28-2"></a>cv <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="st">      </span><span class="kw">ggplot</span>(.,<span class="kw">aes</span>(<span class="dt">x=</span>Trait,<span class="dt">y=</span>accuracy,<span class="dt">fill=</span>Curation)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="st">      </span><span class="kw">geom_boxplot</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb28-5"><a href="#cb28-5"></a><span class="st">      </span><span class="kw">facet_grid</span>(Group<span class="op">~</span>Dataset,<span class="dt">space=</span><span class="st">&#39;free_x&#39;</span>,<span class="dt">scale=</span><span class="st">&#39;free_x&#39;</span>) <span class="op">+</span></span>
+<span id="cb28-6"><a href="#cb28-6"></a><span class="st">      </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>,<span class="dt">color=</span><span class="st">&#39;darkred&#39;</span>,<span class="dt">size=</span><span class="fl">1.25</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb28-7"><a href="#cb28-7"></a><span class="st">      </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb28-8"><a href="#cb28-8"></a><span class="st">      </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle=</span><span class="dv">90</span>,<span class="dt">face=</span><span class="st">&#39;bold&#39;</span>,<span class="dt">size=</span><span class="dv">14</span>)) <span class="op">+</span></span>
+<span id="cb28-9"><a href="#cb28-9"></a><span class="st">      </span><span class="kw">scale_fill_viridis_d</span>()</span></code></pre></div>
+<p><img src="figure/CrossValidation.Rmd/unnamed-chunk-24-1.png" width="864" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
+<pre><code>R version 3.6.1 (2019-07-05)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS Mojave 10.14.6
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] viridis_0.5.1     viridisLite_0.3.0 cowplot_1.0.0     magrittr_1.5     
+ [5] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.3       purrr_0.3.3      
+ [9] readr_1.3.1       tidyr_1.0.0       tibble_2.1.3      ggplot2_3.2.1    
+[13] tidyverse_1.2.1  
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_0.2.5     xfun_0.11            reshape2_1.4.3      
+ [4] haven_2.2.0          lattice_0.20-38      colorspace_1.4-1    
+ [7] vctrs_0.2.0          generics_0.0.2       htmltools_0.4.0     
+[10] yaml_2.2.0           rlang_0.4.1          later_1.0.0         
+[13] pillar_1.4.2         withr_2.1.2          glue_1.3.1          
+[16] modelr_0.1.5         readxl_1.3.1         plyr_1.8.4          
+[19] lifecycle_0.1.0      munsell_0.5.0        gtable_0.3.0        
+[22] workflowr_1.5.0.9000 cellranger_1.1.0     rvest_0.3.5         
+[25] evaluate_0.14        labeling_0.3         knitr_1.26          
+[28] httpuv_1.5.2         broom_0.5.2          Rcpp_1.0.3          
+[31] promises_1.1.0       backports_1.1.5      scales_1.1.0        
+[34] jsonlite_1.6         farver_2.0.1         fs_1.3.1            
+[37] gridExtra_2.3        hms_0.5.2            digest_0.6.22       
+[40] stringi_1.4.3        grid_3.6.1           rprojroot_1.3-2     
+[43] cli_1.1.0            tools_3.6.1          lazyeval_0.2.2      
+[46] crayon_1.3.4         whisker_0.4          pkgconfig_2.0.3     
+[49] zeallot_0.1.0        ellipsis_0.3.0       xml2_1.2.2          
+[52] lubridate_1.7.4      assertthat_0.2.1     rmarkdown_1.17      
+[55] httr_1.4.1           rstudioapi_0.10      R6_2.4.1            
+[58] nlme_3.1-142         git2r_0.26.1         compiler_3.6.1      </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
