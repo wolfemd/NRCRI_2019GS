@@ -1,0 +1,775 @@
+---
+title: "Genomic Prediction Analysis - Stage II of II: Cross-validation Round 1"
+author: "wolfemd"
+date: "2019-7-27"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = F, tidy = T)
+```
+
+# Prep. for cross-validation
+
+##  Read and combine dosages
+
+```{r, eval=F}
+library(tidyverse); library(magrittr); library(furrr); library(data.table)
+options(mc.cores=18)
+plan(multiprocess)
+snps<-tibble(Chr=1:18) %>%
+    mutate(raw=future_pmap(.,function(Chr,...){
+        filename<-paste0("/workdir/marnin/nextgenImputation2019/ImputationStageII_71219/chr",Chr,
+                         "_ImputationReferencePanel_StageIIpartI_72219.raw") 
+        snps<-fread(filename,
+                    stringsAsFactors = F) %>% 
+            as_tibble
+        return(snps) }))
+
+asModelsFit_nr<-readRDS(file="data/nrcri_blupsForCrossVal_72719.rds")
+asModelsFit_iita<-readRDS(file="data/iita_blupsForCrossVal_72619.rds")
+
+asModelsFit_nr %<>% 
+      dplyr::select(Trait,blups) %>% 
+      unnest(blups) %>% 
+      left_join(
+            asModelsFit_nr %>% 
+                  dplyr::select(Trait,blups) %>% 
+                  unnest(blups) %>% 
+                  select(GID) %>% 
+                  distinct %>% 
+                  left_join(tibble(FullSampleName=grep("C1b",rownames(snps),ignore.case = T,value = T)) %>% 
+                                  separate(FullSampleName,c("GID","GBS_ID"),":",extra = 'merge',remove = F) %>% 
+                                  mutate(GID=paste0("NR16",GID)) %>% 
+                                  dplyr::select(-GBS_ID)) %>%
+                  mutate(FullSampleName=ifelse(is.na(FullSampleName),GID,FullSampleName)))
+asModelsFit_nr %<>% 
+      mutate(GID=FullSampleName) %>% 
+      dplyr::select(-FullSampleName) %>% 
+      group_by(Trait) %>% 
+      nest(.key = "blups")
+
+clonesWithBLUPs_nr<-asModelsFit_nr %>% unnest(blups) %$% unique(GID)
+clonesWithBLUPs_iita<-asModelsFit_iita %>% unnest(blups) %$% unique(GID)
+
+```
+```{r, eval=F}
+snps %<>%
+  mutate(raw=map(raw,function(raw){
+    out<-raw %>% 
+      as.data.frame %>% 
+      column_to_rownames(var = "IID") %>% 
+      dplyr::select(-FID,-PAT,-MAT,-SEX,-PHENOTYPE) %>% 
+      as.matrix 
+    return(out) }))
+snps<-reduce(snps$raw,cbind)
+
+snps_nr<-snps[rownames(snps) %in% clonesWithBLUPs_nr,]
+snps_all<-snps[rownames(snps) %in% union(clonesWithBLUPs_iita,
+                                         clonesWithBLUPs_nr),]
+snps_nrPlusGG<-snps[rownames(snps) %in% grep("TMS13F|TMS14F|TMS15F|2013_",
+                                             union(clonesWithBLUPs_iita,clonesWithBLUPs_nr),
+                                             value = T,invert = T),]
+dim(snps_nr) # [1]  1870 84957
+dim(snps_all) # [1]  8132 84957
+dim(snps_nrPlusGG) # [1]  2731 84957
+```
+```{r, eval=F}
+asModelsFit_nr %<>%
+      mutate(blups=map(blups,~filter(.,GID %in% rownames(snps))))
+asModelsFit_nr %>% 
+      mutate(Ntrain=map_dbl(blups,nrow)) %>% 
+      select(Trait,H2,Ntrain) %>% as.data.frame
+
+```
+   Trait           H2 Ntrain
+1         DM 0.0252864279    970
+2    logRTNO 0.0579231135    972
+3         HI 0.1460550481    972
+4    logFYLD 0.0918241317    972
+5  logTOPYLD 0.1378653091    973
+6      MCMDS 0.3339147816   1132
+7      CGMS1 0.1513545399   1187
+8      CGMS2 0.0396305451   1018
+9     BRNHT1 0.0721262328    573
+10     PLTHT 0.0008564113    646
+
+## MAF>1% filter
+```{r, eval=F}
+maf_filter<-function(snps,thresh){
+    freq<-colMeans(snps, na.rm=T)/2; maf<-freq;
+    maf[which(maf > 0.5)]<-1-maf[which(maf > 0.5)]
+    snps1<-snps[,which(maf>thresh)];
+    return(snps1) }
+snps_nr %<>% maf_filter(.,0.01)
+snps_all %<>% maf_filter(.,0.01)
+snps_nrPlusGG %<>% maf_filter(.,0.01)
+dim(snps_nr) # [1]  1870 83234
+dim(snps_all) # [1]  8132 83554
+dim(snps_nrPlusGG) # [1]  2731 84150
+```
+
+## Make kinships
+```{r, eval=F}
+library(tidyverse); library(magrittr); library(rrBLUP)
+Knr<-rrBLUP::A.mat(snps_nr-1)
+KnrPlusGG<-rrBLUP::A.mat(snps_nrPlusGG-1)
+Kall<-rrBLUP::A.mat(snps_all-1)
+
+save(Knr,KnrPlusGG,Kall,file=paste0("/workdir/marnin/NRCRI_2019GS/",
+                                    "Kinships_NRCRI_ForCrossVal_72819.Rdata"))
+saveRDS(snps_nr,file=paste0("/workdir/marnin/NRCRI_2019GS/DosageMatrix_NRCRI_TrainingPop_72819.rds"))
+saveRDS(snps_nrPlusGG,file=paste0("/workdir/marnin/NRCRI_2019GS/DosageMatrix_NRCRI_TrainingPop_plusGG_72819.rds"))
+saveRDS(snps_all,file=paste0("/workdir/marnin/NRCRI_2019GS/DosageMatrix_NRCRI_TrainingPop_plusAllIITA_72819.rds"))
+
+rm(snps_nr,snps_all,snps_nrPlusGG); gc()
+```
+
+# Cross-validation
+
+## Data
+
+```{r, eval=F}
+rm(list=ls()); gc()
+library(tidyverse); library(magrittr); 
+load(file="/workdir/marnin/NRCRI_2019GS/Kinships_NRCRI_ForCrossVal_72819.Rdata")
+asModelsFit_nr<-readRDS(file="data/nrcri_blupsForCrossVal_72719.rds")
+asModelsFit_nr %<>% 
+      dplyr::select(Trait,blups) %>% 
+      unnest(blups) %>% 
+      left_join(
+            asModelsFit_nr %>% 
+                  dplyr::select(Trait,blups) %>% 
+                  unnest(blups) %>% 
+                  select(GID) %>% 
+                  distinct %>% 
+                  left_join(tibble(FullSampleName=grep("C1b",rownames(Kall),ignore.case = T,value = T)) %>% 
+                                  separate(FullSampleName,c("GID","GBS_ID"),":",extra = 'merge',remove = F) %>% 
+                                  mutate(GID=paste0("NR16",GID)) %>% 
+                                  dplyr::select(-GBS_ID)) %>%
+                  mutate(FullSampleName=ifelse(is.na(FullSampleName),GID,FullSampleName)))
+asModelsFit_nr %<>% 
+      mutate(GID=FullSampleName) %>% 
+      dplyr::select(-FullSampleName) %>% 
+      group_by(Trait) %>% 
+      nest(.key = "blups")
+
+blups<-asModelsFit_nr %>%      
+      mutate(blups=map(blups,~filter(.,GID %in% rownames(Kall)))) %>% 
+      dplyr::select(Trait,blups) %>% 
+      rename(nrTrainingData=blups) %>% 
+      left_join(
+            readRDS(file="/workdir/marnin/IITA_2019GS/iita_blupsForCrossVal_72619.rds") %>% 
+                  rename(trainingData=blups) %>% 
+                  mutate(trainingData=map(trainingData,~filter(.,GID %in% rownames(Kall)))) %>% 
+                  filter(Trait %in% asModelsFit_nr$Trait) %>% 
+                  mutate(keep=ifelse(Dataset=="HistoricalDataIncluded" | Trait %in% c("BRNHT1","PLTHT"),
+                                     TRUE,FALSE)) %>% 
+                  filter(keep==TRUE) %>% 
+                  dplyr::select(Trait,trainingData) %>% 
+                  rename(iiTrainingData=trainingData))
+
+c1a<-rownames(Knr) %>% grep("^F",.,value = T); length(c1a) # 899
+c1b<-rownames(Knr) %>% grep("C1b",.,value = T,ignore.case = T); length(c1b) # 629
+c2<-rownames(Knr) %>% grep("C2a|C2b",.,value = T,ignore.case = T); length(c2) # 57
+nrTP<-rownames(Knr) %>% .[!. %in% c(c1a,c1b,c2)]; length(nrTP); # 914
+ggEtc<-rownames(Kall) %>% 
+      grep("2013_|TMS13F|TMS14F|TMS15F",.,value = T,invert = T) %>% 
+      .[!. %in% c(nrTP,c1a,c1b,c2)]; length(ggEtc) # 861
+allIITA<-rownames(Kall) %>% .[!. %in% c(nrTP,c1a,c1b,c2)]; length(allIITA) # 6262
+
+blups %<>%
+    mutate(seed_of_seeds=1:n(),
+           seeds=map(seed_of_seeds,function(seed_of_seeds,reps=5){ 
+               set.seed(seed_of_seeds); 
+               outSeeds<-sample(1:1000,size = reps,replace = F); 
+               return(outSeeds) }))
+
+```
+```{bash, eval=F}
+mkdir /workdir/NRCRI_2019GS/CrossVal_72819
+```
+
+## Function: NRCRI alone
+
+```{r, eval=F}
+# nrTrainingData<-blups$nrTrainingData[[1]]; 
+# iiTrainingData<-blups$iiTrainingData[[1]];
+# seeds<-blups$seeds[[1]]; nfolds<-5; reps<-5;
+crossValidateFunc<-function(Trait,nrTrainingData,iiTrainingData,seeds,nfolds=5,reps=5,ncores=40,...){
+      K<-Knr
+      trntstdata<-nrTrainingData %>% 
+            filter(GID %in% rownames(K))
+      K1<-K[rownames(K) %in% trntstdata$GID,
+            rownames(K) %in% trntstdata$GID]
+      rm(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); gc()
+      # seed<-seeds[[1]]
+      # Nfolds=nfolds
+      makeFolds<-function(Nfolds=nfolds,seed){
+            genotypes<-rownames(K1)
+            
+            set.seed(seed)
+            seed_per_group<-sample(1:10000,size = 3,replace = FALSE)
+      
+            set.seed(seed_per_group[1])
+            FoldsThisRep_nrTP<-tibble(CLONE=genotypes[genotypes %in% nrTP],
+                                       Group="nrTP") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[2])
+            FoldsThisRep_c1a<-tibble(CLONE=genotypes[genotypes %in% c1a],
+                                       Group="c1a") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[3])
+            FoldsThisRep_c1b<-tibble(CLONE=genotypes[genotypes %in% c1b],
+                                       Group="c1b") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+           FoldsThisRep<-bind_rows(FoldsThisRep_nrTP,FoldsThisRep_c1a) %>% 
+                  bind_rows(FoldsThisRep_c1b) %>%  
+                  mutate(Test=map(Test,~.$CLONE),
+                         Train=map(Test,~genotypes[!genotypes %in% .]))
+            return(FoldsThisRep) }
+      
+    crossval<-tibble(Rep=1:reps,seed=unlist(seeds)) %>% 
+        mutate(Folds=map2(Rep,seed,~makeFolds(Nfolds=nfolds,seed=.y))) %>% 
+        unnest()
+
+    #Test<-crossval$Test[[1]]; Train<-crossval$Train[[1]]
+    crossValidate<-function(Test,Train){ 
+      train<-Train
+      test<-Test
+      trainingdata<-trntstdata %>% 
+        filter(GID %in% train) %>% 
+        mutate(GID=factor(GID,levels=rownames(K1)))
+       
+      require(sommer)
+      proctime<-proc.time()
+      fit <- mmer(fixed = drgBLUP ~1,
+                  random = ~vs(GID,Gu=K1),
+                  weights = WT,
+                  data=trainingdata) 
+      proc.time()-proctime
+      
+      x<-fit$U$`u:GID`$drgBLUP 
+      gebvs<-tibble(GID=names(x),
+                    GEBV=as.numeric(x))
+      
+      accuracy<-gebvs %>% 
+            filter(GID %in% test) %>% 
+            left_join(
+                  trntstdata %>% 
+                        dplyr::select(GID,BLUP) %>% 
+                        filter(GID %in% test)) %$% 
+            cor(GEBV,BLUP, use='complete.obs') 
+    return(accuracy)
+    }
+    
+    require(furrr)
+    options(mc.cores=ncores)
+    plan(multiprocess)
+    crossval<-crossval %>% 
+          mutate(accuracy=future_map2(Test,Train,~crossValidate(Test=.x,Train=.y)))
+    saveRDS(crossval,file=paste0("output/CrossVal_72819/",
+                                 "CrossVal_",Trait,"_NRCRIonly_72819.rds"))
+    rm(list=ls()); gc() 
+    }
+```
+
+### cbsumm21 (40)
+
+```{r, eval=F}
+blups %>% 
+      slice(1:5) %>% 
+      mutate(CVaccuracy=pmap(.,crossValidateFunc))
+```
+
+### cbsu30 (40)
+
+```{r, eval=F}
+blups %>% 
+      slice(6:10) %>% 
+      mutate(CVaccuracy=pmap(.,crossValidateFunc))
+```
+
+## Function: IITA augmented
+
+```{r, eval=F}
+# nrTrainingData<-blups$nrTrainingData[[1]]; 
+# iiTrainingData<-blups$iiTrainingData[[1]];
+# seeds<-blups$seeds[[1]]; nfolds<-5; reps<-5;
+crossValidateFunc<-function(Trait,nrTrainingData,iiTrainingData,seeds,nfolds=5,reps=5,ncores=30,...){
+      K<-Kall
+      trntstdata<-nrTrainingData %>% 
+            mutate(Dataset="NRCRI") %>% 
+            bind_rows(iiTrainingData %>% 
+                            mutate(Dataset="IITA")) %>% 
+            filter(GID %in% rownames(K))
+      K1<-K[rownames(K) %in% trntstdata$GID,
+            rownames(K) %in% trntstdata$GID]
+      rm(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); gc()
+      # seed<-seeds[[1]]
+      # Nfolds=nfolds
+      makeFolds<-function(Nfolds=nfolds,seed){
+            genotypes<-rownames(K1)
+            
+            set.seed(seed)
+            seed_per_group<-sample(1:10000,size = 3,replace = FALSE)
+      
+            set.seed(seed_per_group[1])
+            FoldsThisRep_nrTP<-tibble(CLONE=genotypes[genotypes %in% nrTP],
+                                       Group="nrTP") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[2])
+            FoldsThisRep_c1a<-tibble(CLONE=genotypes[genotypes %in% c1a],
+                                       Group="c1a") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[3])
+            FoldsThisRep_c1b<-tibble(CLONE=genotypes[genotypes %in% c1b],
+                                       Group="c1b") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+           FoldsThisRep<-bind_rows(FoldsThisRep_nrTP,FoldsThisRep_c1a) %>% 
+                  bind_rows(FoldsThisRep_c1b) %>%  
+                  mutate(Test=map(Test,~.$CLONE),
+                         Train=map(Test,~genotypes[!genotypes %in% .]))
+            return(FoldsThisRep) }
+      
+    crossval<-tibble(Rep=1:reps,seed=unlist(seeds)) %>% 
+        mutate(Folds=map2(Rep,seed,~makeFolds(Nfolds=nfolds,seed=.y))) %>% 
+        unnest()
+    #Test<-crossval$Test[[1]]; Train<-crossval$Train[[1]]
+    crossValidate<-function(Test,Train){ 
+      train<-Train
+      test<-Test
+      trainingdata<-trntstdata %>% 
+        filter(GID %in% train) %>% 
+        mutate(GID=factor(GID,levels=rownames(K1)))
+       
+      require(sommer)
+      proctime<-proc.time()
+      fit <- mmer(fixed = drgBLUP ~1,
+                  random = ~vs(GID,Gu=K1),
+                  weights = WT,
+                  data=trainingdata) 
+      proc.time()-proctime
+      
+      x<-fit$U$`u:GID`$drgBLUP 
+      gebvs<-tibble(GID=names(x),
+                    GEBV=as.numeric(x))
+      
+      accuracy<-gebvs %>% 
+            filter(GID %in% test) %>% 
+            left_join(
+                  trntstdata %>% 
+                        filter(Dataset=="NRCRI") %>% # only validate on NRCRI blups
+                        dplyr::select(GID,BLUP) %>% 
+                        filter(GID %in% test)) %$% 
+            cor(GEBV,BLUP, use='complete.obs') 
+    return(accuracy)
+    }
+    
+    require(furrr)
+    options(mc.cores=ncores)
+    plan(multiprocess)
+    crossval<-crossval %>% 
+          mutate(accuracy=future_map2(Test,Train,~crossValidate(Test=.x,Train=.y)))
+    saveRDS(crossval,file=paste0("output/CrossVal_72819/",
+                                 "CrossVal_",Trait,"_IITAaugmented_72819.rds"))
+    rm(list=ls()); gc() 
+    }
+```
+
+### cbsumm21 (40)
+
+```{r, eval=F}
+blups %>% 
+      slice(1:5) %>% 
+      mutate(CVaccuracy=pmap(.,crossValidateFunc))
+```
+
+### cbsu30 (40)
+
+```{r, eval=F}
+blups %>% 
+      slice(6:10) %>% 
+      mutate(CVaccuracy=pmap(.,crossValidateFunc))
+```
+
+## Plot Results
+
+```{r, eval=T}
+rm(list=ls());gc()
+library(tidyverse); library(magrittr); library(cowplot); 
+cv<-tibble(Files=list.files("output/CrossVal_72819/")) %>% 
+      mutate(cvResults=map(Files,~readRDS(paste0("output/CrossVal_72819/",.))))
+cv %<>% 
+      mutate(Files=gsub("CrossVal_","",Files),
+             Files=gsub("_72819.rds","",Files)) %>% 
+      separate(Files,c("Trait","Dataset"),"_")
+cv %<>% 
+  unnest(cvResults)
+cv %<>% 
+  dplyr::select(-Test,-Train) %>% 
+  unnest(accuracy)
+```
+
+```{r, fig.width=9, fig.height=6}
+library(viridis)
+cv %>% 
+      mutate(Group=factor(Group,levels=c("nrTP","c1a","c1b")),
+             Dataset=factor(Dataset,levels=c("NRCRIonly","IITAaugmented"))) %>% 
+      ggplot(.,aes(x=Trait,y=accuracy,fill=Dataset)) + 
+      geom_boxplot() + 
+      facet_grid(.~Group,space = 'free', scales = 'free_x') + 
+      geom_hline(yintercept = 0,color='darkred',size=1.25) + 
+      theme_bw() + 
+      theme(axis.text.x = element_text(angle=90)) +
+      scale_fill_viridis_d()
+```
+
+# Cross-validation on curated data
+
+## Prep. data for cross-val
+
+```{r, eval=F}
+rm(list=ls()); gc()
+library(tidyverse); library(magrittr); 
+blups<-readRDS(file="data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds")
+K<-readRDS(file=paste0("/workdir/marnin/NRCRI_2019GS/Kinship_IITA_TrainingPop_72619.rds"))
+blups %<>%
+      rename(trainingData=blups) %>% 
+      mutate(trainingData=map(trainingData,~filter(.,GID %in% rownames(K))),)
+tms13f<-rownames(K) %>% grep("TMS13F|2013_",.,value = T); length(tms13f) # 2395
+tms14f<-rownames(K) %>% grep("TMS14F",.,value = T); length(tms14f) # 2171
+tms15f<-rownames(K) %>% grep("TMS15F",.,value = T); length(tms15f) # 835
+gg<-setdiff(rownames(K),c(tms13f,tms14f,tms15f)); length(gg) # 1228 (not strictly gg)
+
+blups %<>%
+    mutate(seed_of_seeds=1:n(),
+           seeds=map(seed_of_seeds,function(seed_of_seeds,reps=5){ 
+               set.seed(seed_of_seeds); 
+               outSeeds<-sample(1:1000,size = reps,replace = F); 
+               return(outSeeds) }))
+blups %<>%
+      select(-varcomp); gc()
+```
+
+```{r, eval=F}
+rm(list=ls()); gc()
+library(tidyverse); library(magrittr); 
+load(file="/workdir/marnin/NRCRI_2019GS/Kinships_NRCRI_ForCrossVal_72819.Rdata")
+asModelsFit_nr<-readRDS(file="data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds")
+asModelsFit_nr %<>% 
+      dplyr::select(Trait,blups) %>% 
+      unnest(blups) %>% 
+      left_join(
+            asModelsFit_nr %>% 
+                  dplyr::select(Trait,blups) %>% 
+                  unnest(blups) %>% 
+                  select(GID) %>% 
+                  distinct %>% 
+                  left_join(tibble(FullSampleName=grep("C1b",rownames(Kall),ignore.case = T,value = T)) %>% 
+                                  separate(FullSampleName,c("GID","GBS_ID"),":",extra = 'merge',remove = F) %>% 
+                                  mutate(GID=paste0("NR16",GID)) %>% 
+                                  dplyr::select(-GBS_ID)) %>%
+                  mutate(FullSampleName=ifelse(is.na(FullSampleName),GID,FullSampleName)))
+asModelsFit_nr %<>% 
+      mutate(GID=FullSampleName) %>% 
+      dplyr::select(-FullSampleName) %>% 
+      group_by(Trait) %>% 
+      nest(.key = "blups")
+
+blups<-asModelsFit_nr %>%      
+      mutate(blups=map(blups,~filter(.,GID %in% rownames(Kall)))) %>% 
+      dplyr::select(Trait,blups) %>% 
+      rename(nrTrainingData=blups) %>% 
+      left_join(
+            readRDS(file="data/iita_blupsForCrossVal_outliersRemoved_73019.rds") %>% 
+                  rename(trainingData=blups) %>% 
+                  mutate(trainingData=map(trainingData,~filter(.,GID %in% rownames(Kall)))) %>% 
+                  filter(Trait %in% asModelsFit_nr$Trait) %>% 
+                  dplyr::select(Trait,trainingData) %>% 
+                  rename(iiTrainingData=trainingData))
+
+c1a<-rownames(Knr) %>% grep("^F",.,value = T); length(c1a) # 899
+c1b<-rownames(Knr) %>% grep("C1b",.,value = T,ignore.case = T); length(c1b) # 629
+c2<-rownames(Knr) %>% grep("C2a|C2b",.,value = T,ignore.case = T); length(c2) # 57
+nrTP<-rownames(Knr) %>% .[!. %in% c(c1a,c1b,c2)]; length(nrTP); # 914
+ggEtc<-rownames(Kall) %>% 
+      grep("2013_|TMS13F|TMS14F|TMS15F",.,value = T,invert = T) %>% 
+      .[!. %in% c(nrTP,c1a,c1b,c2)]; length(ggEtc) # 861
+allIITA<-rownames(Kall) %>% .[!. %in% c(nrTP,c1a,c1b,c2)]; length(allIITA) # 6262
+
+blups %<>%
+    mutate(seed_of_seeds=1:n(),
+           seeds=map(seed_of_seeds,function(seed_of_seeds,reps=5){ 
+               set.seed(seed_of_seeds); 
+               outSeeds<-sample(1:1000,size = reps,replace = F); 
+               return(outSeeds) }))
+
+```
+```{bash, eval=F}
+mkdir /workdir/NRCRI_2019GS/CrossVal_73019
+```
+
+## NRCRI alone
+```{r, eval=F}
+# nrTrainingData<-blups$nrTrainingData[[1]]; 
+# iiTrainingData<-blups$iiTrainingData[[1]];
+# seeds<-blups$seeds[[1]]; nfolds<-5; reps<-5;
+
+crossValidateFunc<-function(Trait,nrTrainingData,iiTrainingData,seeds,nfolds=5,reps=5,ncores=100,...){
+      K<-Knr
+      trntstdata<-nrTrainingData %>% 
+            filter(GID %in% rownames(K))
+      K1<-K[rownames(K) %in% trntstdata$GID,
+            rownames(K) %in% trntstdata$GID]
+      rm(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); gc()
+      # seed<-seeds[[1]]
+      # Nfolds=nfolds
+      makeFolds<-function(Nfolds=nfolds,seed){
+            genotypes<-rownames(K1)
+            
+            set.seed(seed)
+            seed_per_group<-sample(1:10000,size = 3,replace = FALSE)
+      
+            set.seed(seed_per_group[1])
+            FoldsThisRep_nrTP<-tibble(CLONE=genotypes[genotypes %in% nrTP],
+                                       Group="nrTP") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[2])
+            FoldsThisRep_c1a<-tibble(CLONE=genotypes[genotypes %in% c1a],
+                                       Group="c1a") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[3])
+            FoldsThisRep_c1b<-tibble(CLONE=genotypes[genotypes %in% c1b],
+                                       Group="c1b") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+           FoldsThisRep<-bind_rows(FoldsThisRep_nrTP,FoldsThisRep_c1a) %>% 
+                  bind_rows(FoldsThisRep_c1b) %>%  
+                  mutate(Test=map(Test,~.$CLONE),
+                         Train=map(Test,~genotypes[!genotypes %in% .]))
+            return(FoldsThisRep) }
+      
+    crossval<-tibble(Rep=1:reps,seed=unlist(seeds)) %>% 
+        mutate(Folds=map2(Rep,seed,~makeFolds(Nfolds=nfolds,seed=.y))) %>% 
+        unnest()
+
+    #Test<-crossval$Test[[1]]; Train<-crossval$Train[[1]]
+    crossValidate<-function(Test,Train){ 
+      train<-Train
+      test<-Test
+      trainingdata<-trntstdata %>% 
+        filter(GID %in% train) %>% 
+        mutate(GID=factor(GID,levels=rownames(K1)))
+       
+      require(sommer)
+      proctime<-proc.time()
+      fit <- mmer(fixed = drgBLUP ~1,
+                  random = ~vs(GID,Gu=K1),
+                  weights = WT,
+                  data=trainingdata) 
+      proc.time()-proctime
+      
+      x<-fit$U$`u:GID`$drgBLUP 
+      gebvs<-tibble(GID=names(x),
+                    GEBV=as.numeric(x))
+      
+      accuracy<-gebvs %>% 
+            filter(GID %in% test) %>% 
+            left_join(
+                  trntstdata %>% 
+                        dplyr::select(GID,BLUP) %>% 
+                        filter(GID %in% test)) %$% 
+            cor(GEBV,BLUP, use='complete.obs') 
+    return(accuracy)
+    }
+    
+    require(furrr)
+    options(mc.cores=ncores)
+    plan(multiprocess)
+    crossval<-crossval %>% 
+          mutate(accuracy=future_map2(Test,Train,~crossValidate(Test=.x,Train=.y)))
+    saveRDS(crossval,file=paste0("output/CrossVal_73019/",
+                                 "CrossVal_",Trait,"_NRCRIonly_OutliersRemoved_73019.rds"))
+    rm(list=ls()); gc() 
+    }
+```
+
+### cbsulm16 (112)
+```{r, eval=F}
+blups %>% 
+      mutate(CVaccuracy=pmap(.,crossValidateFunc))
+```
+
+## IITA augmented
+```{r, eval=F}
+# nrTrainingData<-blups$nrTrainingData[[1]]; 
+# iiTrainingData<-blups$iiTrainingData[[1]];
+# seeds<-blups$seeds[[1]]; nfolds<-5; reps<-5;
+crossValidateFunc<-function(Trait,nrTrainingData,iiTrainingData,seeds,nfolds=5,reps=5,ncores=100,...){
+      K<-Kall
+      trntstdata<-nrTrainingData %>% 
+            mutate(Dataset="NRCRI") %>% 
+            bind_rows(iiTrainingData %>% 
+                            mutate(Dataset="IITA")) %>% 
+            filter(GID %in% rownames(K))
+      K1<-K[rownames(K) %in% trntstdata$GID,
+            rownames(K) %in% trntstdata$GID]
+      rm(Knr,KnrPlusGG,Kall,K,nrTrainingData,iiTrainingData); gc()
+      # seed<-seeds[[1]]
+      # Nfolds=nfolds
+      makeFolds<-function(Nfolds=nfolds,seed){
+            genotypes<-rownames(K1)
+            
+            set.seed(seed)
+            seed_per_group<-sample(1:10000,size = 3,replace = FALSE)
+      
+            set.seed(seed_per_group[1])
+            FoldsThisRep_nrTP<-tibble(CLONE=genotypes[genotypes %in% nrTP],
+                                       Group="nrTP") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[2])
+            FoldsThisRep_c1a<-tibble(CLONE=genotypes[genotypes %in% c1a],
+                                       Group="c1a") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+            set.seed(seed_per_group[3])
+            FoldsThisRep_c1b<-tibble(CLONE=genotypes[genotypes %in% c1b],
+                                       Group="c1b") %>% 
+                  mutate(Folds=sample(1:Nfolds,nrow(.),replace=T)) %>% 
+                  arrange(Folds) %>% 
+                  group_by(Group,Folds) %>% 
+                  nest(.key = Test)
+           FoldsThisRep<-bind_rows(FoldsThisRep_nrTP,FoldsThisRep_c1a) %>% 
+                  bind_rows(FoldsThisRep_c1b) %>%  
+                  mutate(Test=map(Test,~.$CLONE),
+                         Train=map(Test,~genotypes[!genotypes %in% .]))
+            return(FoldsThisRep) }
+      
+      crossval<-tibble(Rep=1:reps,seed=unlist(seeds)[1:reps]) %>% 
+        mutate(Folds=map2(Rep,seed,~makeFolds(Nfolds=nfolds,seed=.y))) %>% 
+        unnest()
+    #Test<-crossval$Test[[1]]; Train<-crossval$Train[[1]]
+    crossValidate<-function(Test,Train){ 
+      train<-Train
+      test<-Test
+      trainingdata<-trntstdata %>% 
+        filter(GID %in% train) %>% 
+        mutate(GID=factor(GID,levels=rownames(K1)))
+       
+      require(sommer)
+      proctime<-proc.time()
+      fit <- mmer(fixed = drgBLUP ~1,
+                  random = ~vs(GID,Gu=K1),
+                  weights = WT,
+                  data=trainingdata) 
+      proc.time()-proctime
+      
+      x<-fit$U$`u:GID`$drgBLUP 
+      gebvs<-tibble(GID=names(x),
+                    GEBV=as.numeric(x))
+      
+      accuracy<-gebvs %>% 
+            filter(GID %in% test) %>% 
+            left_join(
+                  trntstdata %>% 
+                        filter(Dataset=="NRCRI") %>% # only validate on NRCRI blups
+                        dplyr::select(GID,BLUP) %>% 
+                        filter(GID %in% test)) %$% 
+            cor(GEBV,BLUP, use='complete.obs') 
+    return(accuracy)
+    }
+    
+    require(furrr)
+    options(mc.cores=ncores)
+    plan(multiprocess)
+    crossval<-crossval %>% 
+          mutate(accuracy=future_map2(Test,Train,~crossValidate(Test=.x,Train=.y)))
+    saveRDS(crossval,file=paste0("/output/CrossVal_73019/",
+                                 "CrossVal_",Trait,"_IITAaugmented_OutliersRemoved_73019.rds"))
+    rm(list=ls()); gc() 
+    }
+```
+
+### cbsulm16 (112)
+
+```{r, eval=F}
+blups %>% 
+      mutate(CVaccuracy=pmap(.,crossValidateFunc))
+```
+
+## Plot Results
+```{r, eval=T}
+rm(list=ls());gc()
+library(tidyverse); library(magrittr); library(cowplot); 
+cvNoOutliers<-tibble(Files=list.files("output/CrossVal_73019/")) %>% 
+                  mutate(Trait=gsub("CrossVal_","",Files),
+                         Trait=gsub("_OutliersRemoved_73019.rds","",Trait),
+                         Curation="OutliersRemoved") %>% 
+      separate(Trait,c("Trait","Dataset"),"_") %>% 
+      mutate(cvResults=map(Files,~readRDS(paste0("output/CrossVal_73019/",.)))) %>% 
+      dplyr::select(-Files)
+
+
+cvWithOutliers<-tibble(Files=list.files("output/CrossVal_72819/")) %>% 
+      mutate(Trait=gsub("CrossVal_","",Files),
+             Trait=gsub("_72819.rds","",Trait),
+             Curation="NoOutlierRemoval") %>% 
+      separate(Trait,c("Trait","Dataset"),"_") %>% 
+      mutate(cvResults=map(Files,~readRDS(paste0("output/CrossVal_72819/",.)))) %>% 
+      dplyr::select(-Files)
+cv<-bind_rows(cvNoOutliers,
+              cvWithOutliers)
+
+cv %<>%  
+  unnest(cvResults) %>% 
+  dplyr::select(-Test,-Train) %>% 
+  unnest(accuracy)
+```
+
+
+```{r, fig.width=9, fig.height=6}
+library(viridis)
+cv %>% 
+      ggplot(.,aes(x=Trait,y=accuracy,fill=Curation)) + 
+      geom_boxplot() + 
+      facet_grid(Group~Dataset,space='free_x',scale='free_x') +
+      geom_hline(yintercept = 0,color='darkred',size=1.25) + 
+      theme_bw() + 
+      theme(axis.text.x = element_text(angle=90,face='bold',size=14)) +
+      scale_fill_viridis_d()
+```
+

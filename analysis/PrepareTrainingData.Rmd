@@ -1,0 +1,550 @@
+---
+title: "Review and QC of NRCRI training data"
+author: "wolfemd"
+date: "2019-7-25"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = F, tidy = T)
+```
+
+# Objective
+
+Follow outlined GenomicPredictionChecklist and previous pipeline to process cassavabase data for ultimate genomic prediction.
+
+This will cover IITA data, all years, all trials, downloaded from DB.
+
+* Purpose: 
+    + Become familiar with the available data. 
+    + Check it to ensure all variables are within expected ranges. 
+    + Make prelminary choices about the data to use for GS. 
+    + Generate hypotheses about the sources of variation in the data.
+* Inputs: "Raw" field trial data
+* Expected outputs: 
+    + "Cleaned" field trial data
+    + Hypotheses about sources of variation in the data
+    
+# [User input] Cassavabase download
+
+Using the [Cassavabase search wizard](https://www.cassavabase.org/breeders/search):  
+
+Used the Wizard. 
+Selected all NRCRI trials from 2012 till present. 
+Downloaded the meta-data.
+Downloaded the phenotype data.
+
+# Read-in trial data
+```{r, eval=F}
+library(tidyverse); library(magrittr)
+path<-"data/DatabaseDownload_72519/"
+
+dbdata<-tibble(files=list.files(path = path)) %>%
+    mutate(Type=ifelse(grepl("metadata",files,ignore.case = T),"metadata","phenotype"),
+           files=map(files,~read.csv(paste0(path,.),
+                                     na.strings = c("#VALUE!",NA,".",""," ","-","\""),
+                                     stringsAsFactors = F,skip = 2) %>%
+                         mutate_all(.,as.character)))
+dbdata %<>% 
+    filter(Type=="phenotype") %>% 
+    select(-Type) %>% 
+    unnest() %>% 
+    left_join(dbdata %>% 
+                  filter(Type=="metadata") %>% 
+                  select(-Type) %>% 
+                  unnest() %>% 
+                  rename(programName=breedingProgramName,
+                         programDescription=breedingProgramDescription,
+                         programDbId=breedingProgramDbId) %>% 
+                  group_by(programName))
+dim(dbdata)
+dbdata %<>% 
+    group_by(programName,locationName,studyYear,studyName,studyDesign,studyDescription,observationLevel) %>% 
+    filter(observationLevel=="plot") %>% 
+    nest(.key = TrialData)
+dim(dbdata)
+```
+43248 observations
+138 trials total
+
+# Group and select trials to analyze
+```{r, eval=F}
+dbdata %<>%
+      mutate(TrialType=ifelse(grepl("TP1",studyName,ignore.case = T),"TP1",NA),
+             TrialType=ifelse(grepl("TP2",studyName,ignore.case = T),"TP2",TrialType),
+             TrialType=ifelse(grepl("C1a",studyName,ignore.case = T),"C1a",TrialType),
+             TrialType=ifelse(grepl("C1b",studyName,ignore.case = T),"C1b",TrialType),
+             TrialType=ifelse(grepl("C2a",studyName,ignore.case = T),"C2a",TrialType),
+             TrialType=ifelse(grepl("15nextgen60gs-cbUM|crossnblk",studyName,ignore.case = T),
+                              "CrossingBlock",TrialType)) %>% 
+      arrange(programName,studyYear,locationName) #%>% #count(TrialType)
+      #filter(is.na(TrialType)) %>% count(studyName,studyDescription)
+```
+```{r, eval=F}
+dbdata %<>% 
+    filter(!is.na(TrialType)) 
+dbdata %>% 
+    group_by(programName) %>% 
+    summarize(N=n())
+```
+84 trials from IITA.
+
+# Wide --> long
+
+Did this step on cbsurobbins, took _lots_ of RAM
+```{r, eval=F}
+dbdata_long<-dbdata %>% 
+    unnest() %>% 
+    mutate(NOHAV=as.numeric(`plant.stands.harvested.counting.CO_334.0000010`)) %>% 
+    select(-`plant.stands.harvested.counting.CO_334.0000010`) %>% 
+    gather(Trait,Value,contains("CO_"),-NOHAV)
+nrow(dbdata_long)/1000000
+```
+2.83M rows! (did this on cbsurobbins)
+
+# Traits and TraitAbbreviations
+List of unique colnames
+```{r, eval=F}
+dbdata_long %>% 
+    select(Trait) %>% 
+    distinct %>% 
+    separate(Trait,c("TraitName","TraitCode"),".CO",remove = F,extra = 'merge') %>% 
+    select(Trait,TraitName) %>% 
+    distinct %>% 
+    filter(grepl(paste0("cassava.mosaic.disease.severity.1.month|cassava.mosaic.disease.severity.3|",
+                        "cassava.mosaic.disease.severity.6|cassava.mosaic.disease.severity.9|",
+                        "green.mite.severity|",
+                        "dry.matter|total.carotenoid.by.chart.1.8|",
+                        "plant.height.measurement.in.cm|first.apical.branch.height.measurement.in.cm|",
+                        "fresh.shoot.weight.measurement.in.kg.per.plot|fresh.storage.root.weight.per.plot|",
+                        "root.number.counting|storage.root.size.visual.rating.1.7"),
+                        Trait,ignore.case = T)) %>% 
+    filter(!grepl("Cassava.brown.streak.disease.leaf.severity.CO_334.0000036",Trait,ignore.case = T)) %>% 
+    filter(!grepl("Cassava.brown.streak.disease.root.severity.CO_334.0000090",Trait,ignore.case = T)) %>% 
+    filter(!grepl("marketable.root",Trait,ignore.case = T)) %>% 
+    filter(!grepl("dry.matter.visual.rating.1.3",Trait,ignore.case = T)) %>% 
+    mutate(TraitAbbrev=c("CGM","CGMS1","CGMS2",
+                         "CMD1S","CMD3S","CMD6S","CMD9S",
+                         "DMsg","DM",
+                         "BRNHT1","SHTWT","RTWT","PLTHT","RTNO")) %>% 
+    inner_join(dbdata_long,.) %>% 
+    rename(FullTraitName=Trait,
+           Trait=TraitAbbrev)
+nrow(dbdata_long)/1000000
+```
+Now only ~0.42M rows.
+
+# QC trait values
+For each trait:
++ Is the range of values correct / possible?
++ If NOHAV == 0 or NA (i.e. no plants harvested)
+    - All harvest traits -> NA, including DM, HI and CBSDRS
++ HI -> NA if RTWT/SHTWT are 0 or NA
+
+Deliberatiely leave out HI (calculate it manually after further QC)
+```{r, eval=F}
+dbdata_long %<>% 
+  mutate(TraitType=ifelse(grepl("CBSD|CAD|CBB|CMD|CGM",Trait),"Disease",
+                          ifelse(grepl("FYLD|RTWT|SHTWT|RTNO|DM|DMsg|RTSZ",Trait),"Yield","Misc")),
+         DiseaseScoreType=ifelse(TraitType=="Disease",
+                                 ifelse(grepl("S",Trait),"Severity","Incidence"),
+                                 NA))
+dbdata_long %<>%
+  mutate(Value=as.numeric(Value),
+         Value=ifelse(TraitType=="Disease" & DiseaseScoreType=="Severity",
+                      ifelse(Value<1 | Value>5,NA,Value),Value),
+         Value=ifelse(TraitType=="Disease" & DiseaseScoreType=="Incidence",
+                      ifelse(Value<=0 | Value>1,NA,Value),Value),
+         Value=ifelse(Trait=="DM",
+                      ifelse(Value>100 | Value<=0,NA,Value),Value),
+         Value=ifelse(Trait=="SPROUT",
+                      ifelse(Value>1 | Value<=0,NA,Value),Value),
+         Value=ifelse(TraitType=="Yield",
+                      ifelse(Value==0 | NOHAV==0 | is.na(NOHAV),NA,Value),Value),
+         NOHAV=ifelse(NOHAV==0,NA,NOHAV),
+         NOHAV=ifelse(NOHAV>42,NA,NOHAV),
+         Value=ifelse((Trait=="RTNO") & (!Value %in% 1:4000),NA,Value))
+```
+
+# Long --> wide
+Did this step on cbsurobbins, took _lots_ of RAM
+```{r, eval=F}
+dbdata<-dbdata_long %>%
+    select(-FullTraitName,-TraitName,-TraitType,-DiseaseScoreType) %>%
+    spread(Trait,Value) %>% 
+    mutate(DM=ifelse(is.na(DM) & !is.na(DMsg),DMsg,DM)) %>% # Fill in any missing DM scores with spec. grav-based scores
+    select(-DMsg)
+rm(dbdata_long); gc()
+nrow(dbdata)
+```
+30097 obs left.
+```{r, eval=F}
+#saveRDS(dbdata,file=paste0(path,"/workdir/marnin/GPpipelineTest_20119/NextGen_TrialData_tmp_20419.rds")
+```
+
+# Assign genos to phenos
+63K germplasmNames
+```{r, eval=F}
+library(tidyverse); library(magrittr)
+gbs2phenoMaster<-dbdata %>% 
+      select(germplasmName) %>% 
+      distinct %>% 
+      left_join(read.csv(paste0("data/",
+                                "NRCRI_GBStoPhenoMaster_40318.csv"), 
+                         stringsAsFactors = F)) %>% 
+      mutate(FullSampleName=ifelse(grepl("C2a",germplasmName,ignore.case = T) & 
+                                         is.na(FullSampleName),germplasmName,FullSampleName)) %>% 
+      filter(!is.na(FullSampleName)) %>% 
+      select(germplasmName,FullSampleName) %>% 
+      bind_rows(dbdata %>% 
+                      select(germplasmName) %>% 
+                      distinct %>% 
+                      left_join(read.csv(paste0("data/",
+                                                "IITA_GBStoPhenoMaster_33018.csv"), 
+                                         stringsAsFactors = F)) %>% 
+                      filter(!is.na(FullSampleName)) %>% 
+                      select(germplasmName,FullSampleName)) %>% 
+      bind_rows(dbdata %>% 
+                      select(germplasmName) %>% 
+                      distinct %>% 
+                      left_join(read.csv("data/GBSdataMasterList_31818.csv", 
+                                         stringsAsFactors = F) %>% 
+                                      select(DNASample,FullSampleName) %>% 
+                                      rename(germplasmName=DNASample)) %>% 
+                      filter(!is.na(FullSampleName)) %>% 
+                      select(germplasmName,FullSampleName)) %>% 
+      bind_rows(dbdata %>% 
+                      select(germplasmName) %>% 
+                      distinct %>% 
+                      mutate(germplasmSynonyms=ifelse(grepl("^UG",germplasmName,ignore.case = T),
+                                                      gsub("UG","Ug",germplasmName),germplasmName)) %>% 
+                      left_join(read.csv("data/GBSdataMasterList_31818.csv", 
+                                         stringsAsFactors = F) %>% 
+                                      select(DNASample,FullSampleName) %>% 
+                                      rename(germplasmSynonyms=DNASample)) %>% 
+                      filter(!is.na(FullSampleName)) %>% 
+                      select(germplasmName,FullSampleName)) %>%  
+      bind_rows(dbdata %>% 
+                      select(germplasmName) %>% 
+                      distinct %>% 
+                      mutate(germplasmSynonyms=ifelse(grepl("^TZ",germplasmName,
+                                                            ignore.case = T),
+                                                      gsub("TZ","",germplasmName),germplasmName)) %>% 
+                      left_join(read.csv("data/GBSdataMasterList_31818.csv", 
+                                         stringsAsFactors = F) %>% 
+                                      select(DNASample,FullSampleName) %>% 
+                                      rename(germplasmSynonyms=DNASample)) %>% 
+                      filter(!is.na(FullSampleName)) %>%
+                      select(germplasmName,FullSampleName)) %>% 
+      distinct %>% 
+      left_join(read.csv("data/GBSdataMasterList_31818.csv", 
+                         stringsAsFactors = F) %>% 
+                      select(FullSampleName,OrigKeyFile,Institute) %>% 
+                      rename(OriginOfSample=Institute)) %>% 
+      mutate(OrigKeyFile=ifelse(grepl("C2a",germplasmName,ignore.case = T),
+                                ifelse(is.na(OrigKeyFile),"LavalGBS",OrigKeyFile),
+                                OrigKeyFile),
+             OriginOfSample=ifelse(grepl("C2a",germplasmName,ignore.case = T),
+                                ifelse(is.na(OriginOfSample),"NRCRI",OriginOfSample),
+                                OriginOfSample))
+nrow(gbs2phenoMaster)
+gbs2phenoMaster %>% count(OriginOfSample)
+gbs2phenoMaster %>% filter(grepl("C2a",germplasmName,ignore.case = T))
+
+# first, filter to just program-DNAorigin matches
+germNamesWithGenos<-dbdata %>% 
+    select(programName,germplasmName) %>% 
+    distinct %>% 
+    left_join(gbs2phenoMaster) %>% 
+    filter(!is.na(FullSampleName))
+nrow(germNamesWithGenos) # 3077
+# program-germNames with locally sourced GBS samples
+germNamesWithGenos_HasLocalSourcedGBS<-germNamesWithGenos %>% #count(OriginOfSample)
+    filter(programName==OriginOfSample) %>% 
+    select(programName,germplasmName) %>% 
+    semi_join(germNamesWithGenos,.) %>% 
+    group_by(programName,germplasmName) %>% # select one DNA per germplasmName per program
+    slice(1) %>% ungroup() 
+nrow(germNamesWithGenos_HasLocalSourcedGBS) # 2592
+# the rest (program-germNames) with GBS but coming from a different breeding program
+germNamesWithGenos_NoLocalSourcedGBS<-germNamesWithGenos %>% 
+    filter(programName==OriginOfSample) %>% 
+    select(programName,germplasmName) %>% 
+    anti_join(germNamesWithGenos,.) %>% 
+    group_by(programName,germplasmName) %>% # select one DNA per germplasmName per program
+    slice(1) %>% ungroup() 
+nrow(germNamesWithGenos_NoLocalSourcedGBS) # 202
+gbsForPhenos<-bind_rows(germNamesWithGenos_HasLocalSourcedGBS,
+                        germNamesWithGenos_NoLocalSourcedGBS) 
+nrow(gbsForPhenos) # 2794
+dbdata %<>% 
+    left_join(gbsForPhenos) 
+```
+
+
+# Harvest Index
+
+```{r, eval=F}
+dbdata %<>% 
+    mutate(HI=RTWT/(RTWT+SHTWT))
+```
+
+# PerArea calculations
+
+For calculating fresh root yield: 
+
+1. PlotSpacing=Area in m2 per plant. plotWidth and plotLength metadata would hypothetically provide this info, but is missing for vast majority of trials. Therefore, use info from Fola.
+2. maxNOHAV. Instead of ExpectedNOHAV. Need to know the max number of plants in the area harvested. For some trials, only the inner (or "net") plot is harvested, therefore the PlantsPerPlot meta-variable will not suffice. Besides, the PlantsPerPlot information is missing for the vast majority of trials. Instead, use observed max(NOHAV) for each trial. We use this plus the PlotSpacing to calc. the area over which the RTWT was measured. During analysis, variation in the actual number of plants harvested will be accounted for.
+
+```{r, eval=F}
+dbdata %<>% 
+    mutate(PlotSpacing=ifelse(programName!="IITA",1,
+                              ifelse(studyYear<2013,1,
+                              ifelse(TrialType %in% c("CET","GeneticGain","ExpCET"),1,0.8))))
+dbdata %<>% 
+    group_by(programName,locationName,studyYear,studyName,studyDesign,studyDescription) %>% 
+    summarize(MaxNOHAV=max(NOHAV, na.rm=T)) %>% 
+    mutate(MaxNOHAV=ifelse(MaxNOHAV=="-Inf",NA,MaxNOHAV)) %>% 
+    left_join(dbdata,.)
+```
+```{r, eval=F}
+dbdata %<>% 
+    mutate(FYLD=RTWT/(MaxNOHAV*PlotSpacing)*10,
+           TOPYLD=SHTWT/(MaxNOHAV*PlotSpacing)*10) 
+```
+
+# Season-wide mean disease
+
+```{r, eval=F}
+dbdata %<>% 
+  mutate(MCMDS=rowMeans(.[,c("CMD1S","CMD3S","CMD6S","CMD9S")], na.rm = T)) %>% 
+  select(-CMD1S,-CMD3S,-CMD6S,-CMD9S,-RTWT,-SHTWT,
+         -contains("COMP"))
+```
+
+# Correct a few location names
+
+```{r, eval=F}
+dbdata %<>% 
+    mutate(locationName=ifelse(locationName=="ibadan","Ibadan",locationName),
+           locationName=ifelse(locationName=="bwanga","Bwanga",locationName),
+           locationName=ifelse(locationName=="maruku","Maruku",locationName),
+           locationName=ifelse(locationName=="kasulu","Kasulu",locationName),
+           locationName=ifelse(locationName=="UKIRIGURU","Ukiriguru",locationName),
+           locationName=ifelse(grepl("NaCRRI",locationName),"Namulonge",locationName))
+```
+
+```{r, eval=F}
+table(dbdata$locationName)
+```
+Abuja  Ikenne    Kano    Onne   Otobi  Ubiaja Umudike
+     60      68    7541      68    5416    1143   15801
+     
+30097 obs remaining
+
+# Output file
+```{r, eval=F}
+saveRDS(dbdata,file="data/NRCRI_CleanedTrialData_72519.rds")
+```
+
+# Detect experimental designs
+
+Whatever design is reported to cassavabase cannot be universally trusted.  
+Examples:
+- Some trials appear to be complete blocked designs and the blockNumber is used instead of replicate, which is what most use.
+- Some complete block designs have nested, incomplete sub-blocks, others simply copy the "replicate" variable into the "blockNumber variable"
+- Some trials have only incomplete blocks _but_ the incomplete block info might be in the replicate _and/or_ the blockNumber column
+
+One reason it might be important to get this right is that the variance among complete blocks might not be the same among incomplete blocks. If we treat a mixture of complete and incomplete blocks as part of the same random-effect (replicated-within-trial), we assume they have the same variance.
+
+Also error variances might be heterogeneous among different trial-types (blocking scheme available) _and/or_ plot sizes (maxNOHAV).
+
+
+```{r, eval=F}
+library(tidyverse);library(magrittr)
+dbdata<-readRDS("data/NRCRI_CleanedTrialData_72519.rds") %>% 
+    select(programName,locationName,studyYear,trialType,TrialType,studyName,germplasmName,FullSampleName,
+           observationUnitDbId,replicate,blockNumber,
+           NOHAV,MaxNOHAV,
+           DM,RTNO,HI,FYLD,TOPYLD,MCMDS,
+           CGM,CGMS1,CGMS2,
+           BRNHT1,PLTHT) %>%
+  gather(Trait,Value,DM:PLTHT) %>% 
+  mutate(PropHAV=NOHAV/MaxNOHAV,
+         Value=ifelse(Trait %in% c("RTNO","FYLD","TOPYLD") & is.na(PropHAV),NA,Value)) %>% 
+  filter(!is.na(Value)) %>% 
+  mutate(Value=ifelse(Trait %in% c("RTNO","FYLD","TOPYLD"),log(Value),Value),
+         Trait=ifelse(Trait %in% c("RTNO","FYLD","TOPYLD"),paste0("log",Trait),Trait)) %>% 
+  mutate(yearInLoc=paste0(programName,"_",locationName,"_",studyYear),
+         trialInLocYr=paste0(yearInLoc,"_",studyName),
+         repInTrial=paste0(trialInLocYr,"_",replicate),
+         blockInRep=paste0(repInTrial,"_",blockNumber)) %>%
+  group_by(programName,locationName,studyYear,trialType,TrialType,studyName,Trait) %>% 
+  nest(.key = TrialData) 
+```
+```{r, eval=F}
+# Define complete blocks
+dbdata %>% 
+    mutate(Nobs=map_dbl(TrialData,~nrow(.)),
+           MaxNOHAV=map_dbl(TrialData,~unique(.$MaxNOHAV)),
+           Nrep=map_dbl(TrialData,~length(unique(.$replicate))),
+           Nblock=map_dbl(TrialData,~length(unique(.$blockInRep))),
+           Nclone=map_dbl(TrialData,~length(unique(.$germplasmName))),
+           medObsPerClone=map_dbl(TrialData,~count(.,germplasmName) %$% round(median(n),1)), # median number of obs per clone
+           medObsPerRep=map_dbl(TrialData,~count(.,replicate) %$% round(median(n),1)), # median number of obs per replicate
+           CompleteBlocks=ifelse(Nrep>1 & medObsPerClone==Nrep & Nobs!=Nrep,TRUE,FALSE), # Define complete block effects based on the "replicate" variable
+           CompleteBlocks=ifelse(Nrep>1 & medObsPerClone!=Nrep & medObsPerClone>1 & Nobs!=Nrep,TRUE,CompleteBlocks)) -> x # Additional trials with imperfect complete blocks
+x %>% 
+    # Some complete blocks may only be represented by the "blockNumber" column
+    mutate(medBlocksPerClone=map_dbl(TrialData,~select(.,blockInRep,germplasmName) %>% # median number of blockInRep per clone
+                                         distinct %>% 
+                                         count(germplasmName) %$% 
+                                         round(median(n))),
+           # If CompleteBlocks==FALSE (complete blocks not detected based on replicate)
+           # and if more than half the clones are represented in more than one block based on the blockInRep variable
+           # Copy the blockInRep values into the repInTrial column
+           # Recompute Nrep
+           # and declare CompleteBlocks==TRUE
+           TrialData=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,map(TrialData,~mutate(.,repInTrial=blockInRep)),TrialData),  
+           Nrep=map_dbl(TrialData,~length(unique(.$repInTrial))),
+           CompleteBlocks=ifelse(medBlocksPerClone>1 & CompleteBlocks==FALSE,TRUE,CompleteBlocks)) -> y
+
+# Define incomplete blocks
+y %>% 
+    mutate(repsEqualBlocks=map_lgl(TrialData,~all(.$replicate==.$blockNumber)),  
+           NrepEqualNblock=ifelse(Nrep==Nblock,TRUE,FALSE),
+           medObsPerBlockInRep=map_dbl(TrialData,~count(.,blockInRep) %$% round(median(n),1))) -> z
+z %<>% # Define complete blocked trials with nested sub-blocks
+    mutate(IncompleteBlocks=ifelse(CompleteBlocks==TRUE & Nobs!=Nblock & Nblock>1 & medObsPerBlockInRep>1 & NrepEqualNblock==FALSE,TRUE,FALSE))
+table(z$IncompleteBlocks)
+z %<>% # Define clearly unreplicated (CompleteBlocks==FALSE & Nrep==1) trials with nested sub-blocks
+    mutate(IncompleteBlocks=ifelse(CompleteBlocks==FALSE & Nobs!=Nblock & Nblock>1 & medObsPerBlockInRep>1 & Nrep==1,TRUE,IncompleteBlocks))
+table(z$IncompleteBlocks)
+z %<>% # Define additional trials with incomplete blocks (blockInRep) where CompleteBlocks==FALSE but Nrep>1 and Nrep==Block
+        mutate(IncompleteBlocks=ifelse(CompleteBlocks==FALSE & IncompleteBlocks==FALSE & 
+                                           Nobs!=Nblock & Nblock>1 &  Nobs!=Nrep & 
+                                           medObsPerBlockInRep>1 & Nrep>1 & NrepEqualNblock==TRUE,TRUE,IncompleteBlocks))
+z %<>% # Last few cases (2 trials actually) where Nrep>1 and Nblock>1 and Nrep!=Nblock but CompleteBlocks==FALSE
+        mutate(IncompleteBlocks=ifelse(CompleteBlocks==FALSE & IncompleteBlocks==FALSE &
+                                           Nobs!=Nblock & Nobs!=Nrep & 
+                                           medObsPerBlockInRep>1 & Nrep>1,TRUE,IncompleteBlocks))
+```
+```{r, eval=F}
+z %>% 
+    count(programName,CompleteBlocks,IncompleteBlocks) %>% spread(IncompleteBlocks,n)
+```
+## Output file
+```{r, eval=F}
+saveRDS(z,file="data/NRCRI_ExptDesignsDetected_72719.rds")
+colnames(z)
+```
+
+# Preliminary Analysis of Field data (Exploratory Data Analysis phase)
+
+* Purpose:
+    + Test hypotheses generated in the previous step. 
+    + Analyze each trial to check for genetic vs. non-genetic variability (H2)
+    + Determine the "best" model for the data
+* Inputs: "Cleaned" field trial data
+* Expected outputs: 
+    + "Curated" field trial data (e.g. trials w/o variability removed) 
+    + A plan for modelling the data during genomic prediction
+    + Based on computation requirements and the size / structure of the data, decide whether to use one- or two-stage prediction downstream?
+    + Possibly: BLUPs for validation prediction accuracy
+    + If planning two-step genomic prediction: BLUPs, de-regressed BLUPs, PEV, Weights for second-stage
+    
+## Set-up training datasets
+```{r, eval=F}
+rm(list=ls()); gc()
+library(tidyverse);library(magrittr)
+trials<-readRDS("data/NRCRI_ExptDesignsDetected_72719.rds")
+phenos<-trials %>% 
+      unnest(TrialData) %>% 
+      select(programName,locationName,studyYear,TrialType,studyName,
+             CompleteBlocks,IncompleteBlocks,
+             yearInLoc,trialInLocYr,repInTrial,blockInRep,observationUnitDbId,
+             germplasmName,FullSampleName,
+             Trait,Value,MaxNOHAV,NOHAV,PropHAV) %>% 
+      mutate(GID=ifelse(!is.na(FullSampleName),FullSampleName,germplasmName),
+             IncompleteBlocks=ifelse(IncompleteBlocks==TRUE,"Yes","No"),
+             CompleteBlocks=ifelse(CompleteBlocks==TRUE,"Yes","No")) %>% 
+      group_by(Trait) %>% 
+      nest(.key = "TrainingData")
+rm(trials); gc()
+
+
+```
+
+## TO DO / FUTURE DIRECTIONS:
+### Add trial level curation here and/or
+### Add outlier detection and removal and/or
+### Compare models here and test best in GP
+ 
+## Fit IID models, get BLUPs from asreml
+```{r, eval=F}
+#library(asremlPlus)
+library(furrr)
+options(mc.cores=12)
+plan(multiprocess)
+library(asreml)
+phenos %<>%
+  mutate(asFixedFormula="Value ~ yearInLoc",
+         asFixedFormula=ifelse(grepl("logRTNO",Trait) | grepl("logFYLD",Trait) | grepl("logTOPYLD",Trait),
+                               paste0(asFixedFormula," + PropHAV"),asFixedFormula),
+         atBlockModel=paste0("~idv(GID) + idv(trialInLocYr) + at(CompleteBlocks,'Yes'):repInTrial ",
+                              "+ at(IncompleteBlocks,'Yes'):blockInRep"),
+         stdRandModel=paste0("~idv(GID) + idv(trialInLocYr) + idv(repInTrial) + idv(blockInRep)")) %>% 
+      gather(Model,asRandFormula,atBlockModel:stdRandModel)
+
+asModelsFit<-phenos %>%
+  mutate(fitAS=future_pmap(.,function(asFixedFormula,asRandFormula,TrainingData,...){
+    out<-asreml(as.formula(asFixedFormula),
+                         random = as.formula(asRandFormula),
+                         data = TrainingData, maxiter = 40,workspace=400e6) 
+    ll<-summary(out,all=T)$loglik
+    varcomp<-summary(out,all=T)$varcomp
+    aic<- -2*ll + 2*nrow(varcomp)
+    Vg<-varcomp["GID!GID.var","component"]
+    Ve<-varcomp["R!variance","component"]
+    H2=Vg/(Vg+Ve)
+    blups<-summary(out,all=T)$coef.random %>% 
+          as.data.frame %>% 
+          rownames_to_column(var = "GID") %>% 
+          select(GID,solution,`std error`) %>% 
+          filter(grepl("GID",GID)) %>% 
+          rename(BLUP=solution) %>% 
+          mutate(GID=gsub("GID_","",GID),
+                 PEV=`std error`^2,
+                 REL=1-(PEV/Vg),
+                 drgBLUP=BLUP/REL,
+                 WT=(1-H2)/((0.1 + (1-REL)/REL)*H2))
+    out<-tibble(loglik=ll,AIC=aic,Vg,Ve,H2,
+                blups=list(blups),varcomp=list(varcomp))
+    return(out) }))
+
+asModelsFit %>% 
+      unnest(fitAS,.drop = T) %>% 
+      select(Trait,Model,AIC) %>% 
+      spread(Model,AIC) %>% 
+      mutate(AICdiff=atBlockModel-stdRandModel,
+             Diff=ifelse(AICdiff>2,"stdRandModel",
+                         ifelse(AICdiff< -2,"atBlockBest","Similar"))) %>% count(Diff)
+```
+ Diff             n
+  <chr>        <int>
+1 Similar          4
+2 atBlockBest      5
+3 stdRandModel     1
+
+Just like for IITA, the poorly named atBlock model is best or similar to standard, so I'll use it.
+
+```{r, eval=F}
+asModelsFit %<>% 
+  select(-TrainingData,-asFixedFormula,-asRandFormula) %>% 
+      filter(Model=="atBlockModel") %>% 
+  unnest(fitAS)
+saveRDS(asModelsFit,file="/workdir/marnin/NRCRI_2019GS/nrcri_blupsForCrossVal_72719.rds")
+
+```

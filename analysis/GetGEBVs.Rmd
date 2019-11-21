@@ -1,0 +1,379 @@
+---
+title: "Predict GEBV for NRCRI C2"
+author: "wolfemd"
+date: "2019-7-30"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = F, tidy = T)
+```
+
+# Load snps
+
+```{r, eval=F}
+rm(list=ls()); gc()
+library(tidyverse); library(magrittr); 
+snps<-readRDS(file=paste0("/workdir/marnin/nextgenImputation2019/ImputationStageIII_72619/",
+                         "DosageMatrix_RefPanelAndGSprogeny_ReadyForGP_73019.rds"))
+```
+
+# Load blups
+
+## IITA 
+
+```{r, eval=F}
+blupsNoOut<-readRDS(file="data/iita_blupsForCrossVal_outliersRemoved_73019.rds")
+blups<-readRDS(file="data/iita_blupsForCrossVal_72619.rds")
+
+blups<-blupsNoOut %>% 
+      dplyr::select(Trait,blups) %>% 
+      mutate(OutliersRemoved=TRUE) %>% 
+      bind_rows(
+            blups %>% 
+                  filter(Dataset=="HistoricalDataIncluded" | Trait %in% c("BRNHT1","PLTHT")) %>% 
+                  dplyr::select(Trait,blups) %>% 
+                  mutate(OutliersRemoved=FALSE))
+gidsInPhenos<-tibble(GID=blups %>% unnest() %$% GID %>% unique)
+gidsInPhenos %<>% 
+      left_join(
+            tibble(dartName=rownames(snps) %>% grep("TMS18",.,value=T)) %>% 
+                  separate(dartName,c("GID","dartID"),"_",extra = 'merge',remove = F) %>% 
+                  semi_join(gidsInPhenos) %>% 
+                  group_by(GID) %>% 
+                  slice(1) %>% 
+                  ungroup()) %>% 
+      mutate(NewName=ifelse(!is.na(dartName),dartName,GID))
+blups %<>% 
+      unnest(blups) %>% 
+      left_join(gidsInPhenos) %>% 
+      mutate(GID=NewName) %>% 
+      dplyr::select(-dartName,-dartID,-NewName) %>% 
+      filter(GID %in% rownames(snps)) %>% 
+      group_by(Trait,OutliersRemoved) %>% 
+      nest(.key = "trainingData")
+
+iitablups<-blups
+iitaGIDsInPhenos<-gidsInPhenos
+```
+
+## NRCRI
+
+```{r, eval=F}
+blupsNoOut<-readRDS(file="data/nrcri_blupsForCrossVal_72719.rds")
+blups<-readRDS(file="data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds")
+blups<-blupsNoOut %>% 
+      dplyr::select(Trait,blups) %>% 
+      mutate(OutliersRemoved=TRUE) %>% 
+      bind_rows(
+            blups %>% 
+                  dplyr::select(Trait,blups) %>% 
+                  mutate(OutliersRemoved=FALSE))
+gidsInPhenos<-tibble(GID=blups %>% unnest() %$% GID %>% unique)
+table(gidsInPhenos$GID %in% rownames(snps)) # 1241
+gidsInPhenos$GID[gidsInPhenos$GID %in% rownames(snps)] %>% grep("C1b",.,ignore.case = T, value = T) # none
+
+gidsInPhenos %<>% 
+      mutate(NewName=GID) %>%
+      filter(NewName %in% rownames(snps)) %>% 
+      bind_rows(
+            gidsInPhenos %>% 
+                  mutate(NewName=GID) %>%
+                  filter(!NewName %in% rownames(snps)) %>% 
+                  left_join(
+                        tibble(FullSampleName=grep("C1b",rownames(snps),ignore.case = T,value = T)) %>% 
+                              separate(FullSampleName,c("NewName","GBS_ID"),":",extra = 'merge',remove = F) %>% 
+                              mutate(NewName=paste0("NR16",NewName)) %>% 
+                              dplyr::select(-GBS_ID)) %>% 
+                  filter(!is.na(FullSampleName)) %>% 
+                  mutate(NewName=FullSampleName) %>% 
+                  dplyr::select(-FullSampleName)) %>% 
+      bind_rows(
+            gidsInPhenos %>% 
+                  mutate(NewName=GID) %>%
+                  filter(!NewName %in% rownames(snps),
+                         grepl("C2a",NewName,ignore.case = T)) %>% 
+                  left_join(
+                        tibble(dartName=grep("C2a",rownames(snps),ignore.case = T,value = T)) %>% 
+                              separate(dartName,c("dartID","NewName"),"\\.\\.\\.",extra = 'merge',remove = F) %>% 
+                              filter(!is.na(NewName))) %>% 
+                  mutate(NewName=ifelse(!is.na(dartName),dartName,NewName)) %>% 
+                  dplyr::select(-dartName,-dartID)) %>% 
+      filter(NewName %in% rownames(snps))
+table(gidsInPhenos$NewName %in% rownames(snps)) # 2768
+
+blups %<>% 
+      unnest(blups) %>% 
+      left_join(gidsInPhenos) %>% 
+      filter(!is.na(NewName)) %>% 
+      mutate(GID=NewName) %>% 
+      dplyr::select(-NewName) %>% 
+      group_by(Trait,OutliersRemoved) %>% 
+      nest(.key = "trainingData")
+```
+
+# Make a kinship matrix
+
+## Subset snps
+```{r, eval=F}
+samples2Keep<-union(iitaGIDsInPhenos$NewName %>% .[. %in% rownames(snps)],
+                    gidsInPhenos$NewName %>% .[. %in% rownames(snps)]) %>% 
+      union(.,rownames(snps) %>% grep("C2",.,value = T, ignore.case = T))
+
+length(samples2Keep) # 13363
+snps<-snps[samples2Keep,]
+```
+
+## MAF>1% filter
+```{r, eval=F}
+maf_filter<-function(snps,thresh){
+    freq<-colMeans(snps, na.rm=T)/2; maf<-freq;
+    maf[which(maf > 0.5)]<-1-maf[which(maf > 0.5)]
+    snps1<-snps[,which(maf>thresh)];
+    return(snps1) }
+snps %<>% maf_filter(.,0.01)
+dim(snps) # [1] 13363 68695
+```
+
+## Make kinships
+```{r, eval=F}
+library(tidyverse); library(magrittr); library(rrBLUP)
+K<-rrBLUP::A.mat(snps-1)
+
+saveRDS(K,file=paste0("/workdir/marnin/NRCRI_2019GS/",
+                      "Kinship_NRCRI_SamplesForGP_73119.rds"))
+saveRDS(snps,file=paste0("/workdir/marnin/NRCRI_2019GS/",
+                         "DosageMatrix_NRCRI_SamplesForGP_73119.rds"))
+#rm(snps); gc()
+```
+
+# PCA 
+```{r, eval=F}
+pca<-prcomp(snps, scale=T, center=T) 
+pc_scores<-pca$x %>% 
+    .[,1:15] %>% 
+    as.data.frame %>% 
+    rownames_to_column(var="FullSampleName") %>% 
+    mutate(GeneticGroup=NA,
+           GeneticGroup=ifelse(FullSampleName %in% iitaGIDsInPhenos$NewName,"IITA",
+                               ifelse(grepl("C2aF",FullSampleName,ignore.case = T),"C2a",
+                                      ifelse(grepl("C2bF",FullSampleName,ignore.case = T),"C2b",
+                                             ifelse(grep("^F",FullSampleName,value = T),"C1a",
+                                                    ifelse(grepl("C1b",FullSampleName,ignore.case = T),"C1b","nrTP"))))))
+pc_scores %>%
+      count(GeneticGroup)
+summary(pca)$importance[,1:10] 
+```
+                            PC1      PC2      PC3      PC4      PC5      PC6
+Standard deviation     59.20352 48.62852 42.35600 36.86073 35.90890 33.34435
+Proportion of Variance  0.05102  0.03442  0.02612  0.01978  0.01877  0.01619
+Cumulative Proportion   0.05102  0.08545  0.11156  0.13134  0.15011  0.16630
+                            PC7      PC8      PC9     PC10
+Standard deviation     32.97758 30.70189 30.22302 27.44181
+Proportion of Variance  0.01583  0.01372  0.01330  0.01096
+Cumulative Proportion   0.18213  0.19585  0.20915  0.22011
+
+Save PCA results
+```{r, eval=F}
+saveRDS(pc_scores,file="/workdir/marnin/NRCRI_2019GS/PCscores_NRCRI_SamplesForGP_73119.rds")
+saveRDS(pca,file="/workdir/marnin/NRCRI_2019GS/PCA_NRCRI_SamplesForGP_73119.rds")
+rm(pca); gc()
+```
+Copy to local machine
+ 0.04623  0.02847  0.02576  0.02201
+ 
+```{r, fig.width=9, fig.height=6}
+rm(list=ls());gc()
+library(tidyverse); library(magrittr); library(cowplot); 
+pc_scores<-readRDS("output/PCscores_NRCRI_SamplesForGP_73119.rds")
+pc_scores$FullSampleName %>% grep("C1b",.,value = T,ignore.case = T)
+pc_scores %<>% 
+       mutate(GeneticGroup=NA,
+           GeneticGroup=ifelse(grepl("NR17F",FullSampleName,ignore.case = T),"C2a",
+                                      ifelse(grepl("C2bF",FullSampleName,ignore.case = T),"C2b",
+                                             ifelse(grepl("^F",FullSampleName) & !grepl("C1b",FullSampleName),"C1a",
+                                                    ifelse(grepl("C1b",FullSampleName,
+                                                                 ignore.case = T),"C1b","nrTP_plus_IITA"))))) 
+library(viridis)
+pc1v2<-pc_scores %>% 
+      ggplot(.,aes(x=PC1,y=PC2,color=GeneticGroup)) + 
+      geom_point() + 
+      theme_bw() + scale_color_viridis_d() + 
+      labs(x="PC1 (5%)",y="PC2 (3%)") + theme(legend.position = 'none')
+pc3v4<-pc_scores %>% 
+      ggplot(.,aes(x=PC3,y=PC4,color=GeneticGroup)) + 
+      geom_point() + 
+      theme_bw() + scale_color_viridis_d() + 
+      labs(x="PC3 (3%)",y="PC4 (2%)")
+plot_grid(pc1v2,pc3v4)
+```
+```{r, fig.width=9, fig.height=6}
+pc_scores %>% 
+      ggplot(.,aes(x=PC5,y=PC6,color=GeneticGroup)) + 
+      geom_point() + 
+      theme_bw() + scale_color_viridis_d() + 
+      labs(x="PC5 (2%)",y="PC6 (2%)")
+```
+
+# Prediction
+
+## Load data for pred
+```{r, eval=F}
+rm(list=ls()); gc()
+library(tidyverse); library(magrittr); 
+K<-readRDS(file=paste0("/workdir/NRCRI_2019GS/Kinship_NRCRI_SamplesForGP_73119.rds"))
+
+blupsNoOut<-readRDS(file="data/iita_blupsForCrossVal_outliersRemoved_73019.rds")
+blups<-readRDS(file="data/iita_blupsForCrossVal_72619.rds")
+blups<-blupsNoOut %>% 
+      dplyr::select(Trait,blups) %>% 
+      mutate(OutliersRemoved=TRUE) %>% 
+      bind_rows(
+            blups %>% 
+                  filter(Dataset=="HistoricalDataIncluded" | Trait %in% c("BRNHT1","PLTHT")) %>% 
+                  dplyr::select(Trait,blups) %>% 
+                  mutate(OutliersRemoved=FALSE))
+gidsInPhenos<-tibble(GID=blups %>% unnest() %$% GID %>% unique)
+gidsInPhenos %<>% 
+      left_join(
+            tibble(dartName=rownames(K) %>% grep("TMS18",.,value=T)) %>% 
+                  separate(dartName,c("GID","dartID"),"_",extra = 'merge',remove = F) %>% 
+                  semi_join(gidsInPhenos) %>% 
+                  group_by(GID) %>% 
+                  slice(1) %>% 
+                  ungroup()) %>% 
+      mutate(NewName=ifelse(!is.na(dartName),dartName,GID))
+blups %<>% 
+      unnest(blups) %>% 
+      left_join(gidsInPhenos) %>% 
+      mutate(GID=NewName) %>% 
+      dplyr::select(-dartName,-dartID,-NewName) %>% 
+      filter(GID %in% rownames(K)) %>% 
+      group_by(Trait,OutliersRemoved) %>% 
+      nest(.key = "trainingData")
+iitablups<-blups
+iitaGIDsInPhenos<-gidsInPhenos
+
+blupsNoOut<-readRDS(file="data/nrcri_blupsForCrossVal_72719.rds")
+blups<-readRDS(file="data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds")
+blups<-blupsNoOut %>% 
+      dplyr::select(Trait,blups) %>% 
+      mutate(OutliersRemoved=TRUE) %>% 
+      bind_rows(
+            blups %>% 
+                  dplyr::select(Trait,blups) %>% 
+                  mutate(OutliersRemoved=FALSE))
+gidsInPhenos<-tibble(GID=blups %>% unnest() %$% GID %>% unique)
+gidsInPhenos %<>% 
+      mutate(NewName=GID) %>%
+      filter(NewName %in% rownames(K)) %>% 
+      bind_rows(
+            gidsInPhenos %>% 
+                  mutate(NewName=GID) %>%
+                  filter(!NewName %in% rownames(K)) %>% 
+                  left_join(
+                        tibble(FullSampleName=grep("C1b",rownames(K),ignore.case = T,value = T)) %>% 
+                              separate(FullSampleName,c("NewName","GBS_ID"),":",extra = 'merge',remove = F) %>% 
+                              mutate(NewName=paste0("NR16",NewName)) %>% 
+                              dplyr::select(-GBS_ID)) %>% 
+                  filter(!is.na(FullSampleName)) %>% 
+                  mutate(NewName=FullSampleName) %>% 
+                  dplyr::select(-FullSampleName)) %>% 
+      bind_rows(
+            gidsInPhenos %>% 
+                  mutate(NewName=GID) %>%
+                  filter(!NewName %in% rownames(K),
+                         grepl("C2a",NewName,ignore.case = T)) %>% 
+                  left_join(
+                        tibble(dartName=grep("C2a",rownames(K),ignore.case = T,value = T)) %>% 
+                              separate(dartName,c("dartID","NewName"),"\\.\\.\\.",extra = 'merge',remove = F) %>% 
+                              filter(!is.na(NewName))) %>% 
+                  mutate(NewName=ifelse(!is.na(dartName),dartName,NewName)) %>% 
+                  dplyr::select(-dartName,-dartID)) %>% 
+      filter(NewName %in% rownames(K))
+blups %<>% 
+      unnest(blups) %>% 
+      left_join(gidsInPhenos) %>% 
+      filter(!is.na(NewName)) %>% 
+      mutate(GID=NewName) %>% 
+      dplyr::select(-NewName) %>% 
+      group_by(Trait,OutliersRemoved) %>% 
+      nest(.key = "trainingData")
+blups %<>% 
+      unnest(trainingData) %>% 
+      bind_rows(
+            iitablups %>% 
+                  filter(Trait %in% blups$Trait) %>% 
+                  unnest(trainingData)) %>% 
+      group_by(Trait,OutliersRemoved) %>% 
+      nest(.key = "trainingData") %>% 
+      mutate(Dataset="IITAaugmented") %>% 
+      bind_rows(blups %>% 
+                      mutate(Dataset="NRCRIonly"))
+rm(blupsNoOut,gidsInPhenos,iitaGIDsInPhenos,iitablups, proctime); gc()
+
+```
+
+## Get GEBVs
+```{r, eval=F}
+require(sommer)
+require(furrr)
+options(future.globals.maxSize= 1500*1024^2)
+options(mc.cores=40)
+plan(multiprocess)
+proctime<-proc.time()
+blups %>% 
+      mutate(GEBV=future_pmap(.,function(Trait,Dataset,OutliersRemoved,trainingData){
+            trndata<-trainingData %>% 
+                  mutate(GID=factor(GID,levels=rownames(K)))
+            fit <- mmer(fixed = drgBLUP ~1,
+                        random = ~vs(GID,Gu=K),
+                        weights = WT,
+                        data=trndata)
+            x<-fit$U$`u:GID`$drgBLUP 
+            gebvs<-tibble(GID=names(x),
+                          GEBV=as.numeric(x))
+            saveRDS(gebvs,file=paste0("output/",
+                                      "GEBV_",Trait,"_",Dataset,"_OutliersEqual",OutliersRemoved,"_NRCRI_73119.rds"))
+            rm(fit); gc()}))
+proc.time() - proctime
+
+```
+
+## Format GEBV
+```{r, eval=F}
+library(tidyverse); library(magrittr);
+gebvs<-list.files() %>% 
+      grep("GEBV_",.,value = T) %>% 
+      grep("_NRCRI_73119.rds",.,value = T) %>% 
+      tibble(Files=.) %>% 
+      mutate(Trait=gsub("GEBV_","",Files),
+             Trait=gsub("_NRCRI_73119.rds","",Trait)) %>% 
+      separate(Trait,c("Trait","Dataset","OutliersRemoved"),"_") %>% 
+      mutate(OutliersRemoved=gsub("OutliersEqual","",OutliersRemoved),
+             Files=map(Files,~readRDS(.))) %>% 
+      unnest(Files)
+gebvs %<>% 
+      mutate(GeneticGroup=NA,
+             GeneticGroup=ifelse(grepl("NR17F",GID,ignore.case = T),"C2a",
+                                 ifelse(grepl("C2bF",GID,ignore.case = T),"C2b",
+                                        ifelse(grepl("^F",GID) & !grepl("C1b",GID),"C1a",
+                                               ifelse(grepl("C1b",GID,
+                                                            ignore.case = T),"C1b","nrTP_plus_IITA"))))) 
+gebvs %>% 
+      count(GeneticGroup)
+```
+
+## Write GEBVs
+
+```{r, eval=F}
+gebvs %>% 
+  spread(Trait,GEBV) %>% 
+  group_by(Dataset,OutliersRemoved) %>% 
+  nest() %>% 
+  mutate(data=pmap(.,function(data,Dataset,OutliersRemoved){
+    write.csv(data,file=paste0("output/GEBV_NRCRI_",Dataset,"_OutliersRemoved",OutliersRemoved,"_73119.csv"),
+              row.names = F)}))
+```
