@@ -185,10 +185,10 @@ Copy to local machine
  0.04623  0.02847  0.02576  0.02201
  
 ```{r, fig.width=9, fig.height=6}
-rm(list=ls());gc()
+#rm(list=ls());gc()
 library(tidyverse); library(magrittr); library(cowplot); 
 pc_scores<-readRDS("output/PCscores_NRCRI_SamplesForGP_73119.rds")
-pc_scores$FullSampleName %>% grep("C1b",.,value = T,ignore.case = T)
+#pc_scores$FullSampleName %>% grep("C1b",.,value = T,ignore.case = T)
 pc_scores %<>% 
        mutate(GeneticGroup=NA,
            GeneticGroup=ifelse(grepl("NR17F",FullSampleName,ignore.case = T),"C2a",
