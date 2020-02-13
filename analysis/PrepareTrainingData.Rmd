@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = F, tidy = T)
 
 Follow outlined GenomicPredictionChecklist and previous pipeline to process cassavabase data for ultimate genomic prediction.
 
-This will cover IITA data, all years, all trials, downloaded from DB.
+This will cover NRCRI data, all years, all trials, downloaded from DB.
 
 * Purpose: 
     + Become familiar with the available data. 
@@ -89,7 +89,7 @@ dbdata %>%
     group_by(programName) %>% 
     summarize(N=n())
 ```
-84 trials from IITA.
+84 trials from NRCRI
 
 # Wide --> long
 
@@ -180,12 +180,8 @@ rm(dbdata_long); gc()
 nrow(dbdata)
 ```
 30097 obs left.
-```{r, eval=F}
-#saveRDS(dbdata,file=paste0(path,"/workdir/marnin/GPpipelineTest_20119/NextGen_TrialData_tmp_20419.rds")
-```
 
 # Assign genos to phenos
-63K germplasmNames
 ```{r, eval=F}
 library(tidyverse); library(magrittr)
 gbs2phenoMaster<-dbdata %>% 
@@ -455,96 +451,5 @@ colnames(z)
     + Possibly: BLUPs for validation prediction accuracy
     + If planning two-step genomic prediction: BLUPs, de-regressed BLUPs, PEV, Weights for second-stage
     
-## Set-up training datasets
-```{r, eval=F}
-rm(list=ls()); gc()
-library(tidyverse);library(magrittr)
-trials<-readRDS("data/NRCRI_ExptDesignsDetected_72719.rds")
-phenos<-trials %>% 
-      unnest(TrialData) %>% 
-      select(programName,locationName,studyYear,TrialType,studyName,
-             CompleteBlocks,IncompleteBlocks,
-             yearInLoc,trialInLocYr,repInTrial,blockInRep,observationUnitDbId,
-             germplasmName,FullSampleName,
-             Trait,Value,MaxNOHAV,NOHAV,PropHAV) %>% 
-      mutate(GID=ifelse(!is.na(FullSampleName),FullSampleName,germplasmName),
-             IncompleteBlocks=ifelse(IncompleteBlocks==TRUE,"Yes","No"),
-             CompleteBlocks=ifelse(CompleteBlocks==TRUE,"Yes","No")) %>% 
-      group_by(Trait) %>% 
-      nest(.key = "TrainingData")
-rm(trials); gc()
-
-
-```
-
-## TO DO / FUTURE DIRECTIONS:
-### Add trial level curation here and/or
-### Add outlier detection and removal and/or
-### Compare models here and test best in GP
- 
-## Fit IID models, get BLUPs from asreml
-```{r, eval=F}
-#library(asremlPlus)
-library(furrr)
-options(mc.cores=12)
-plan(multiprocess)
-library(asreml)
-phenos %<>%
-  mutate(asFixedFormula="Value ~ yearInLoc",
-         asFixedFormula=ifelse(grepl("logRTNO",Trait) | grepl("logFYLD",Trait) | grepl("logTOPYLD",Trait),
-                               paste0(asFixedFormula," + PropHAV"),asFixedFormula),
-         atBlockModel=paste0("~idv(GID) + idv(trialInLocYr) + at(CompleteBlocks,'Yes'):repInTrial ",
-                              "+ at(IncompleteBlocks,'Yes'):blockInRep"),
-         stdRandModel=paste0("~idv(GID) + idv(trialInLocYr) + idv(repInTrial) + idv(blockInRep)")) %>% 
-      gather(Model,asRandFormula,atBlockModel:stdRandModel)
-
-asModelsFit<-phenos %>%
-  mutate(fitAS=future_pmap(.,function(asFixedFormula,asRandFormula,TrainingData,...){
-    out<-asreml(as.formula(asFixedFormula),
-                         random = as.formula(asRandFormula),
-                         data = TrainingData, maxiter = 40,workspace=400e6) 
-    ll<-summary(out,all=T)$loglik
-    varcomp<-summary(out,all=T)$varcomp
-    aic<- -2*ll + 2*nrow(varcomp)
-    Vg<-varcomp["GID!GID.var","component"]
-    Ve<-varcomp["R!variance","component"]
-    H2=Vg/(Vg+Ve)
-    blups<-summary(out,all=T)$coef.random %>% 
-          as.data.frame %>% 
-          rownames_to_column(var = "GID") %>% 
-          select(GID,solution,`std error`) %>% 
-          filter(grepl("GID",GID)) %>% 
-          rename(BLUP=solution) %>% 
-          mutate(GID=gsub("GID_","",GID),
-                 PEV=`std error`^2,
-                 REL=1-(PEV/Vg),
-                 drgBLUP=BLUP/REL,
-                 WT=(1-H2)/((0.1 + (1-REL)/REL)*H2))
-    out<-tibble(loglik=ll,AIC=aic,Vg,Ve,H2,
-                blups=list(blups),varcomp=list(varcomp))
-    return(out) }))
-
-asModelsFit %>% 
-      unnest(fitAS,.drop = T) %>% 
-      select(Trait,Model,AIC) %>% 
-      spread(Model,AIC) %>% 
-      mutate(AICdiff=atBlockModel-stdRandModel,
-             Diff=ifelse(AICdiff>2,"stdRandModel",
-                         ifelse(AICdiff< -2,"atBlockBest","Similar"))) %>% count(Diff)
-```
- Diff             n
-  <chr>        <int>
-1 Similar          4
-2 atBlockBest      5
-3 stdRandModel     1
-
-Just like for IITA, the poorly named atBlock model is best or similar to standard, so I'll use it.
-
-```{r, eval=F}
-asModelsFit %<>% 
-  select(-TrainingData,-asFixedFormula,-asRandFormula) %>% 
-      filter(Model=="atBlockModel") %>% 
-  unnest(fitAS)
-saveRDS(asModelsFit,file="/workdir/marnin/NRCRI_2019GS/nrcri_blupsForCrossVal_72719.rds")
-
-```
+# Next step
+[Stage I: Get BLUPs](GetBLUPs.html)

@@ -28,7 +28,7 @@ The code below represents Stage I.
 ```{r, eval=F}
 rm(list=ls()); gc()
 library(tidyverse);library(magrittr)
-trials<-readRDS("/workdir/marnin/NRCRI_2019GS/NRCRI_ExptDesignsDetected_72719.rds")
+trials<-readRDS("data/NRCRI_ExptDesignsDetected_72719.rds")
 phenos<-trials %>% 
       unnest(TrialData) %>% 
       select(programName,locationName,studyYear,TrialType,studyName,
@@ -94,6 +94,7 @@ asModelsFit %>%
       mutate(AICdiff=atBlockModel-stdRandModel,
              Diff=ifelse(AICdiff>2,"stdRandModel",
                          ifelse(AICdiff< -2,"atBlockBest","Similar"))) %>% count(Diff)
+
 ```
  Diff             n
   <chr>        <int>
@@ -217,3 +218,6 @@ asModelsFit %<>%
       unnest(fitAS)
 saveRDS(asModelsFit,file="data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds")
 ```
+
+# Next step
+[Stage II: Cross-validation](CrossValidation.html)

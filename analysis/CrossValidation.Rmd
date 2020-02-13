@@ -773,3 +773,5 @@ cv %>%
       scale_fill_viridis_d()
 ```
 
+# Next step
+[Stage II: Get GEBVs](GetGEBVs.html)
