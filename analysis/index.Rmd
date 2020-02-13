@@ -1,11 +1,21 @@
 ---
-title: "Home"
+title: "NRCRI Genomic Selection 2019"
 site: workflowr::wflow_site
-output:
-  workflowr::wflow_html:
-    toc: false
+date: "2019-July"
+output: workflowr::wflow_html
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
-Welcome to my research website.
+# Analysis Steps
+
+1. [Prepare the training data](PrepareTrainingData.html)
+2. [Stage I: Get BLUPs](GetBLUPs.html)
+3. [Stage II: Cross-validation Run](CrossValidation.html)
+4. [Stage II: Genomic prediction of GS C2](GetGEBVs.html)
+
+# Standardization ToDo's
+
+Same as for IITA, see [IITA 2019 GS](https://wolfemd.github.io/IITA_2019GS/).
+
+Need somewhere to upload the big data files so they can be linked in my code.
