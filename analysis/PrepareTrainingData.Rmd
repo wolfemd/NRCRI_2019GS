@@ -437,19 +437,5 @@ saveRDS(z,file="data/NRCRI_ExptDesignsDetected_72719.rds")
 colnames(z)
 ```
 
-# Preliminary Analysis of Field data (Exploratory Data Analysis phase)
-
-* Purpose:
-    + Test hypotheses generated in the previous step. 
-    + Analyze each trial to check for genetic vs. non-genetic variability (H2)
-    + Determine the "best" model for the data
-* Inputs: "Cleaned" field trial data
-* Expected outputs: 
-    + "Curated" field trial data (e.g. trials w/o variability removed) 
-    + A plan for modelling the data during genomic prediction
-    + Based on computation requirements and the size / structure of the data, decide whether to use one- or two-stage prediction downstream?
-    + Possibly: BLUPs for validation prediction accuracy
-    + If planning two-step genomic prediction: BLUPs, de-regressed BLUPs, PEV, Weights for second-stage
-    
 # Next step
 [Stage I: Get BLUPs](GetBLUPs.html)
