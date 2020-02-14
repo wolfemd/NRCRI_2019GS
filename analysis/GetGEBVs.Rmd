@@ -378,3 +378,6 @@ gebvs %>%
               row.names = F)}))
 ```
 
+# Next step
+
+[Get Genetic Gain Estimate](GetGainEst.html)
