@@ -441,6 +441,9 @@ div.tocify {
   <a href="GetGEBVs.html">Get GEBV for GS C2</a>
 </li>
 <li>
+  <a href="GetGainEst.html">Est. Genetic Gain</a>
+</li>
+<li>
   <a href="license.html">License</a>
 </li>
       </ul>
@@ -495,7 +498,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-02-13
+<strong>Last updated:</strong> 2020-02-14
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -586,10 +589,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwolfemdNRCRI2019GStree56c64d471dcfba4e610b7d856e71ee22ccd0801ctargetblank56c64d4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/wolfemd/NRCRI_2019GS/tree/56c64d471dcfba4e610b7d856e71ee22ccd0801c" target="_blank">56c64d4</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwolfemdNRCRI2019GStree41edc5fd6039621867bab2684b4d06a787a323edtargetblank41edc5fa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/wolfemd/NRCRI_2019GS/tree/41edc5fd6039621867bab2684b4d06a787a323ed" target="_blank">41edc5f</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwolfemdNRCRI2019GStree56c64d471dcfba4e610b7d856e71ee22ccd0801ctargetblank56c64d4a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwolfemdNRCRI2019GStree41edc5fd6039621867bab2684b4d06a787a323edtargetblank41edc5fa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -600,65 +603,10 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
+    Ignored:    data/.DS_Store
     Ignored:    output/.DS_Store
 
 Untracked files:
-    Untracked:  data/GBSdataMasterList_31818.csv
-    Untracked:  data/IITA_GBStoPhenoMaster_33018.csv
-    Untracked:  data/NRCRI_CleanedTrialData_72519.rds
-    Untracked:  data/NRCRI_ExptDesignsDetected_72719.rds
-    Untracked:  data/NRCRI_GBStoPhenoMaster_40318.csv
-    Untracked:  data/iita_blupsForCrossVal_72619.rds
-    Untracked:  data/iita_blupsForCrossVal_outliersRemoved_73019.rds
-    Untracked:  data/nrcri_blupsForCrossVal_72719.rds
-    Untracked:  data/nrcri_blupsForCrossVal_outliersRemoved_73019.rds
-    Untracked:  output/CrossVal_72819/
-    Untracked:  output/CrossVal_73019/
-    Untracked:  output/GEBV_BRNHT1_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_BRNHT1_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_BRNHT1_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_BRNHT1_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS1_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS1_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS1_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS1_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS2_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS2_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS2_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_CGMS2_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_DM_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_DM_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_DM_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_DM_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_HI_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_HI_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_HI_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_HI_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_MCMDS_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_MCMDS_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_MCMDS_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_MCMDS_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_NRCRI_IITAaugmented_OutliersRemovedFALSE_73119.csv
-    Untracked:  output/GEBV_NRCRI_IITAaugmented_OutliersRemovedTRUE_73119.csv
-    Untracked:  output/GEBV_NRCRI_NRCRIonly_OutliersRemovedFALSE_73119.csv
-    Untracked:  output/GEBV_NRCRI_NRCRIonly_OutliersRemovedTRUE_73119.csv
-    Untracked:  output/GEBV_PLTHT_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_PLTHT_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_PLTHT_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_PLTHT_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logFYLD_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logFYLD_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logFYLD_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logFYLD_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logRTNO_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logRTNO_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logRTNO_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logRTNO_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logTOPYLD_IITAaugmented_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logTOPYLD_IITAaugmented_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logTOPYLD_NRCRIonly_OutliersEqualFALSE_NRCRI_73119.rds
-    Untracked:  output/GEBV_logTOPYLD_NRCRIonly_OutliersEqualTRUE_NRCRI_73119.rds
-    Untracked:  output/PCscores_NRCRI_SamplesForGP_73119.rds
     Untracked:  workflowr_log.R
 
 </code></pre>
@@ -698,6 +646,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/wolfemd/NRCRI_2019GS/blob/41edc5fd6039621867bab2684b4d06a787a323ed/analysis/CrossValidation.Rmd" target="_blank">41edc5f</a>
+</td>
+<td>
+wolfemd
+</td>
+<td>
+2020-02-14
+</td>
+<td>
+wflow_publish(republish = TRUE, all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/wolfemd/NRCRI_2019GS/09226559f2fe28a29ccc9449c3bd8401721006cf/docs/CrossValidation.html" target="_blank">0922655</a>
+</td>
+<td>
+wolfemd
+</td>
+<td>
+2020-02-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1126,8 +1108,8 @@ Publish the first set of analyses and files for NRCRI 2019 GS,
 <h2>Plot Results</h2>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>());<span class="kw">gc</span>()</span></code></pre></div>
 <pre><code>          used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)
-Ncells  618755 33.1    1251315 66.9         NA  1251315 66.9
-Vcells 1167007  9.0    8388608 64.0     102400  2432132 18.6</code></pre>
+Ncells  618705 33.1    1252155 66.9         NA  1251540 66.9
+Vcells 1165744  8.9    8388608 64.0     102400  2425965 18.6</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(cowplot); </span>
 <span id="cb16-2"><a href="#cb16-2"></a>cv&lt;-<span class="kw">tibble</span>(<span class="dt">Files=</span><span class="kw">list.files</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb16-3"><a href="#cb16-3"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">cvResults=</span><span class="kw">map</span>(Files,<span class="op">~</span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(<span class="st">&quot;output/CrossVal_72819/&quot;</span>,.))))</span>
@@ -1468,8 +1450,8 @@ wolfemd
 <h2>Plot Results</h2>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>());<span class="kw">gc</span>()</span></code></pre></div>
 <pre><code>          used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)
-Ncells 1102795 58.9    1978205 105.7         NA  1978205 105.7
-Vcells 1957515 15.0    9710881  74.1     102400 12138601  92.7</code></pre>
+Ncells 1102745 58.9    1977625 105.7         NA  1977625 105.7
+Vcells 1956252 15.0    9708736  74.1     102400 12135085  92.6</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(magrittr); <span class="kw">library</span>(cowplot); </span>
 <span id="cb27-2"><a href="#cb27-2"></a>cvNoOutliers&lt;-<span class="kw">tibble</span>(<span class="dt">Files=</span><span class="kw">list.files</span>(<span class="st">&quot;output/CrossVal_73019/&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb27-3"><a href="#cb27-3"></a><span class="st">                  </span><span class="kw">mutate</span>(<span class="dt">Trait=</span><span class="kw">gsub</span>(<span class="st">&quot;CrossVal_&quot;</span>,<span class="st">&quot;&quot;</span>,Files),</span>
